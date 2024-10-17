@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Document</title>
+		<script>
+			(async function jsonFetch() {
+				const url = "http://ftp.cptec.inpe.br/modelos/tempo/BRAMS/ams_08km/recortes/grh/json/2024/01/22/00/1083.json";
+				const response = await fetch(url);
+				const json = await response.json();
+				console.log(json);
+			});
+		</script>
+	</head>
+	<body></body>
+</html>
