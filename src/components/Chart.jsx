@@ -1,49 +1,12 @@
-import { useEffect, useState } from "react"
-
 import Highcharts from "highcharts"
 import HighchartsReact from "highcharts-react-official"
 import highchartsMore from "highcharts/highcharts-more"
+import highchartsWindbarb from "highcharts/modules/windbarb"
 highchartsMore(Highcharts)
+highchartsWindbarb(Highcharts)
 
-export default function Chart({ date, cityId, model, product, type }) {
-	const [chart, setChart] = useState({})
-	const [loading, setLoading] = useState(true)
-	const [error, setError] = useState(null)
-
+export default function Chart({ date, chart, type }) {
 	const pointStart = `${date.year}-${date.month}-${date.day} ${date.hour}:00:00`
-	const urlJson = "https://ftp.cptec.inpe.br/modelos/tempo/{{model}}/{{product}}/recortes/grh/json2/{{year}}/{{month}}/{{day}}/{{hour}}/{{cityId}}.json"
-	const urlChart = urlJson.replaceAll("{{year}}", date.year).replaceAll("{{month}}", date.month).replaceAll("{{day}}", date.day).replaceAll("{{hour}}", date.hour).replaceAll("{{cityId}}", cityId).replaceAll("{{model}}", model).replaceAll("{{product}}", product)
-
-	useEffect(() => {
-		async function fetchJson() {
-			setLoading(true)
-			try {
-				const response = await fetch(urlChart)
-				const data = await response.json()
-				if (data.datasets?.length == 0) {
-					throw new Error("Dados não encontrados no JSON")
-				}
-				setChart(data.datasets[0])
-			} catch (error) {
-				console.log("Erro ao obter dados do JSON: " + url + ".", error)
-				setError(error)
-			} finally {
-				setLoading(false)
-			}
-		}
-
-		fetchJson()
-	}, [])
-
-	if (loading) {
-		return <div>Carregando...</div>
-	}
-
-	if (error) {
-		return <div>{error.message}</div>
-	}
-
-	console.log(chart)
 
 	// Global
 	const optionsGlobal = {
@@ -97,11 +60,11 @@ export default function Chart({ date, cityId, model, product, type }) {
 		},
 		title: {
 			text: `Temperatura, pressão e precipitação para ${chart.area}`,
-			align: "left",
+			align: "center",
 		},
 		subtitle: {
 			text: `Fonte: CPTEC`,
-			align: "left",
+			align: "center",
 		},
 		xAxis: [
 			{
@@ -279,16 +242,14 @@ export default function Chart({ date, cityId, model, product, type }) {
 		},
 		title: {
 			text: "Temperatura mínima, maxima e média",
+			align: "center",
 		},
 		subtitle: {
 			text: "Fonte: CPTEC",
-			align: "left",
+			align: "center",
 		},
 		xAxis: [
 			{
-				labels: {
-					enabled: false,
-				},
 				type: "datetime",
 				offset: 0,
 				crosshair: true,
@@ -305,6 +266,11 @@ export default function Chart({ date, cityId, model, product, type }) {
 				pointStart: Date.UTC(parseInt(pointStart.substr(0, 4)), parseInt(pointStart.substr(5, 2)) - 1, parseInt(pointStart.substr(8, 2)), parseInt(pointStart.substr(11, 2)), parseInt(pointStart.substr(14, 2)), parseInt(pointStart.substr(17, 2))),
 				pointInterval: 36e5,
 			},
+		},
+		tooltip: {
+			shared: true,
+			xDateFormat: "%d/%m/%Y %H:%M",
+			valueDecimals: 1,
 		},
 		tooltip: {
 			crosshairs: true,
@@ -347,17 +313,90 @@ export default function Chart({ date, cityId, model, product, type }) {
 		],
 	}
 
+	// Vento
+	const wind = chart.data.map((item) => [parseFloat(item.wind_speed.toFixed(2)), parseFloat(item.wind_dir.toFixed(2))])
+	const optionsWind = {
+		chart: {
+			zoomType: "x",
+		},
+		title: {
+			text: "Vento em 1000 hPa (m/s)",
+			align: "center",
+		},
+		subtitle: {
+			text: "Fonte: CPTEC",
+			align: "center",
+		},
+		xAxis: {
+			type: "datetime",
+			offset: 40,
+		},
+		tooltip: {
+			crosshairs: true,
+			shared: true,
+			valueSuffix: "mm/h",
+			xDateFormat: "%d/%m/%Y %H:%M",
+			valueDecimals: 2,
+		},
+		plotOptions: {
+			series: {
+				// Configura o eixo X para ser a partir da data fornecida
+				pointStart: Date.UTC(parseInt(pointStart.substr(0, 4)), parseInt(pointStart.substr(5, 2)) - 1, parseInt(pointStart.substr(8, 2)), parseInt(pointStart.substr(11, 2)), parseInt(pointStart.substr(14, 2)), parseInt(pointStart.substr(17, 2))),
+				pointInterval: 36e5,
+			},
+		},
+		series: [
+			{
+				type: "windbarb",
+				data: wind,
+				name: "Vento",
+				color: Highcharts.getOptions().colors[1],
+				showInLegend: false,
+				tooltip: {
+					valueSuffix: " m/s",
+				},
+			},
+			{
+				type: "area",
+				keys: ["y", "rotation"], // rotation is not used here
+				data: wind,
+				color: Highcharts.getOptions().colors[0],
+				fillColor: {
+					linearGradient: {
+						x1: 0,
+						x2: 0,
+						y1: 0,
+						y2: 1,
+					},
+					stops: [
+						[0, Highcharts.getOptions().colors[0]],
+						[1, Highcharts.color(Highcharts.getOptions().colors[0]).setOpacity(0.25).get()],
+					],
+				},
+				name: "Velocidade do vento",
+				tooltip: {
+					valueSuffix: " m/s",
+				},
+				states: {
+					inactive: {
+						opacity: 1,
+					},
+				},
+			},
+		],
+	}
+
 	// Type Options
 	let options = ""
 	if (type === "tempPressPrec") {
 		// Temperatura, Pressão e Precipitação
 		options = optionsTempPressPrec
 	} else if (type === "tempMinMaxMedia") {
-		// Temperatura
+		// Temperatura minima, maxima e media
 		options = optionsTempMinMaxMedia
-	} else if (type === "press") {
-		// Pressão
-		options = optionsPress
+	} else if (type === "wind") {
+		// Vento
+		options = optionsWind
 	}
 
 	return (
