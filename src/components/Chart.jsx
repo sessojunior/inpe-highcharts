@@ -69,7 +69,7 @@ export default function Chart({ date, chart, type }) {
 			zoomType: "xy",
 		},
 		title: {
-			text: `Temperatura, pressão e precipitação para ${chart.area}`,
+			text: `Temperatura, pressão e precipitação`,
 			align: "center",
 		},
 		subtitle: {
@@ -838,6 +838,7 @@ export default function Chart({ date, chart, type }) {
 
 	return (
 		<div>
+			<h3 className='text-2xl'>{chart.area}</h3>
 			<HighchartsReact highcharts={Highcharts} options={options} />
 		</div>
 	)

@@ -29,14 +29,14 @@ export default function Charts({ date, urlChart }) {
 	}, [])
 
 	if (loading) {
-		return <div>Carregando...</div>
+		return <div className='text-xl py-4'>Carregando...</div>
 	}
 
 	if (error) {
-		return <div>{error.message}</div>
+		return <div className='text-xl py-4'>{error.message}</div>
 	}
 
-	console.log(chart)
+	//console.log(chart)
 
 	// Tipos de charts:
 	// tempPressPrec - Temperatura, pressão e precipitação
@@ -51,7 +51,7 @@ export default function Charts({ date, urlChart }) {
 
 	return (
 		<div>
-			<h2>Meteogramas</h2>
+			<h2 className='text-3xl font-bold py-4 text-red-600'>Meteogramas</h2> <p className='text-lg pb-4'>URL: {urlChart}</p>
 			<Chart date={date} chart={chart} type='tempPressPrec' />
 			<Chart date={date} chart={chart} type='tempMinMaxMedia' />
 			<Chart date={date} chart={chart} type='press' />
