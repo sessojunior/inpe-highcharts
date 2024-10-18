@@ -1,16 +1,16 @@
 // Gráfico
 // Essa função é executada automaticamente e retorna o JSON
 // Ela pega a data e o JSON do modelo desejado e passa para a função gerarGrafico
-(async function () {
+;(async function () {
 	// Data que irá pegar os dados dos modelos
 	const date = {
 		year: "2024",
-		month: "04",
-		day: "02",
+		month: "10",
+		day: "17",
 		hour: "00",
-	};
+	}
 
-	const id = 1083;
+	const id = 1083
 
 	// URL do JSON
 	const url = {
@@ -18,40 +18,40 @@
 		//BRAMS_ams_08km: "BRAMS_ams_08km.json",
 		//BAM: "BAM.json",
 		//Eta: "Eta.json",
-		WRF_ams_07km: `http://ftp.cptec.inpe.br/modelos/tempo/WRF/ams_07km/recortes/grh/json/${date.year}/${date.month}/${date.day}/${date.hour}/${id}.json`,
-		BRAMS_ams_08km: `http://ftp.cptec.inpe.br/modelos/tempo/BRAMS/ams_08km/recortes/grh/json/${date.year}/${date.month}/${date.day}/${date.hour}/${id}.json`,
-		BAM: `http://ftp.cptec.inpe.br/modelos/tempo/BAM/TQ0666L064/recortes/grh/json/${date.year}/${date.month}/${date.day}/${date.hour}/${id}.json`,
-		Eta: `http://ftp.cptec.inpe.br/modelos/tempo/Eta/ams_08km/recortes/grh/json/${date.year}/${date.month}/${date.day}/${date.hour}/${id}.json`,
-	};
+		WRF_ams_07km: `http://ftp.cptec.inpe.br/modelos/tempo/WRF/ams_07km/recortes/grh/json2/${date.year}/${date.month}/${date.day}/${date.hour}/${id}.json`,
+		BRAMS_ams_08km: `http://ftp.cptec.inpe.br/modelos/tempo/BRAMS/ams_08km/recortes/grh/json2/${date.year}/${date.month}/${date.day}/${date.hour}/${id}.json`,
+		BAM: `http://ftp.cptec.inpe.br/modelos/tempo/BAM/TQ0666L064/recortes/grh/json2/${date.year}/${date.month}/${date.day}/${date.hour}/${id}.json`,
+		Eta: `http://ftp.cptec.inpe.br/modelos/tempo/Eta/ams_08km/recortes/grh/json2/${date.year}/${date.month}/${date.day}/${date.hour}/${id}.json`,
+	}
 	//console.log(url);
-	document.querySelector("#date").innerHTML = `${date.day}/${date.month}/${date.year} ${date.hour}z`;
-	document.querySelector("#json_WRF_ams_07km").setAttribute("href", url.WRF_ams_07km);
-	document.querySelector("#json_BRAMS_ams_08km").setAttribute("href", url.BRAMS_ams_08km);
-	document.querySelector("#json_BAM").setAttribute("href", url.BAM);
-	document.querySelector("#json_Eta").setAttribute("href", url.Eta);
+	document.querySelector("#date").innerHTML = `${date.day}/${date.month}/${date.year} ${date.hour}z`
+	document.querySelector("#json_WRF_ams_07km").setAttribute("href", url.WRF_ams_07km)
+	document.querySelector("#json_BRAMS_ams_08km").setAttribute("href", url.BRAMS_ams_08km)
+	document.querySelector("#json_BAM").setAttribute("href", url.BAM)
+	document.querySelector("#json_Eta").setAttribute("href", url.Eta)
 
 	// Obter dados do JSON
 	const fetchJson = async (url) => {
 		try {
-			const response = await fetch(url);
-			const data = await response.json();
-			return data;
+			const response = await fetch(url)
+			const data = await response.json()
+			return data
 		} catch (error) {
-			console.log("Erro ao obter dados do JSON: " + url + ".", error);
-			return {};
+			console.log("Erro ao obter dados do JSON: " + url + ".", error)
+			return {}
 		}
-	};
+	}
 	const dataJson = {
 		WRF_ams_07km: await fetchJson(url.WRF_ams_07km),
 		BRAMS_ams_08km: await fetchJson(url.BRAMS_ams_08km),
 		BAM: await fetchJson(url.BAM),
 		Eta: await fetchJson(url.Eta),
-	};
+	}
 	//console.log("dataJson", dataJson);
 
 	// Chama a função de gerar os gráficos
-	gerarGraficos(dataJson, date);
-})();
+	gerarGraficos(dataJson, date)
+})()
 
 // Essa função é responsável por plotar os gráficos na página web
 function gerarGraficos(dataJson, date) {
@@ -60,11 +60,11 @@ function gerarGraficos(dataJson, date) {
 	//console.log(date);
 
 	// Dados
-	let pointStart = `${date.year}-${date.month}-${date.day} ${date.hour}:00:00`;
-	let WRF_ams_07km = false;
-	let BRAMS_ams_08km = false;
-	let BAM = false;
-	let Eta = false;
+	let pointStart = `${date.year}-${date.month}-${date.day} ${date.hour}:00:00`
+	let WRF_ams_07km = false
+	let BRAMS_ams_08km = false
+	let BAM = false
+	let Eta = false
 
 	// WRF_ams_07km
 	if (dataJson.WRF_ams_07km.datasets !== undefined) {
@@ -74,14 +74,14 @@ function gerarGraficos(dataJson, date) {
 			lon: dataJson.WRF_ams_07km.datasets[0].lon,
 			area: dataJson.WRF_ams_07km.datasets[0].area,
 			data: dataJson.WRF_ams_07km.datasets[0].data,
-		};
+		}
 		//console.log(WRF_ams_07km.datasets);
 		//console.log(WRF_ams_07km.lat);
 		//console.log(WRF_ams_07km.lon);
 		//console.log(WRF_ams_07km.data);
-		document.querySelector("#WRF_ams_07km_lat").innerHTML = WRF_ams_07km.lat;
-		document.querySelector("#WRF_ams_07km_lon").innerHTML = WRF_ams_07km.lon;
-		document.querySelector("#WRF_ams_07km_area").innerHTML = WRF_ams_07km.area;
+		document.querySelector("#WRF_ams_07km_lat").innerHTML = WRF_ams_07km.lat
+		document.querySelector("#WRF_ams_07km_lon").innerHTML = WRF_ams_07km.lon
+		document.querySelector("#WRF_ams_07km_area").innerHTML = WRF_ams_07km.area
 	}
 
 	// BRAMS_ams_08km
@@ -92,14 +92,14 @@ function gerarGraficos(dataJson, date) {
 			lon: dataJson.BRAMS_ams_08km.datasets[0].lon,
 			area: dataJson.BRAMS_ams_08km.datasets[0].area,
 			data: dataJson.BRAMS_ams_08km.datasets[0].data,
-		};
+		}
 		// console.log(BRAMS_ams_08km.datasets);
 		// console.log(BRAMS_ams_08km.lat);
 		// console.log(BRAMS_ams_08km.lon);
 		// console.log(BRAMS_ams_08km.data);
-		document.querySelector("#BRAMS_ams_08km_lat").innerHTML = BRAMS_ams_08km.lat;
-		document.querySelector("#BRAMS_ams_08km_lon").innerHTML = BRAMS_ams_08km.lon;
-		document.querySelector("#BRAMS_ams_08km_area").innerHTML = BRAMS_ams_08km.area;
+		document.querySelector("#BRAMS_ams_08km_lat").innerHTML = BRAMS_ams_08km.lat
+		document.querySelector("#BRAMS_ams_08km_lon").innerHTML = BRAMS_ams_08km.lon
+		document.querySelector("#BRAMS_ams_08km_area").innerHTML = BRAMS_ams_08km.area
 	}
 
 	// BAM
@@ -110,14 +110,14 @@ function gerarGraficos(dataJson, date) {
 			lon: dataJson.BAM.datasets[0].lon,
 			area: dataJson.BAM.datasets[0].area,
 			data: dataJson.BAM.datasets[0].data,
-		};
+		}
 		//console.log(BAM.datasets);
 		// console.log(BAM.lat);
 		// console.log(BAM.lon);
 		// console.log(BAM.data);
-		document.querySelector("#BAM_lat").innerHTML = BAM.lat;
-		document.querySelector("#BAM_lon").innerHTML = BAM.lon;
-		document.querySelector("#BAM_area").innerHTML = BAM.area;
+		document.querySelector("#BAM_lat").innerHTML = BAM.lat
+		document.querySelector("#BAM_lon").innerHTML = BAM.lon
+		document.querySelector("#BAM_area").innerHTML = BAM.area
 	}
 
 	// Eta
@@ -128,14 +128,14 @@ function gerarGraficos(dataJson, date) {
 			lon: dataJson.Eta.datasets[0].lon,
 			area: dataJson.Eta.datasets[0].area,
 			data: dataJson.Eta.datasets[0].data,
-		};
+		}
 		//console.log(Eta.datasets);
 		// console.log(Eta.lat);
 		// console.log(Eta.lon);
 		// console.log(Eta.data);
-		document.querySelector("#Eta_lat").innerHTML = Eta.lat;
-		document.querySelector("#Eta_lon").innerHTML = Eta.lon;
-		document.querySelector("#Eta_area").innerHTML = Eta.area;
+		document.querySelector("#Eta_lat").innerHTML = Eta.lat
+		document.querySelector("#Eta_lon").innerHTML = Eta.lon
+		document.querySelector("#Eta_area").innerHTML = Eta.area
 	}
 
 	// Gráfico 1 (WRF_ams_07km)
@@ -147,13 +147,13 @@ function gerarGraficos(dataJson, date) {
 		},
 		valueDecimals: 1,
 		pointStart: pointStart,
-	};
+	}
 	if (WRF_ams_07km) {
 		WRF_ams_07km.data.forEach((item) => {
-			chart1.data.prec.push(parseFloat(item.prec.toFixed(chart1.valueDecimals)));
-			chart1.data.press.push(parseFloat(item.press.toFixed(chart1.valueDecimals)));
-			chart1.data.temp.push(parseFloat(item.temp.toFixed(chart1.valueDecimals)));
-		});
+			chart1.data.prec.push(parseFloat(item.prec.toFixed(chart1.valueDecimals)))
+			chart1.data.press.push(parseFloat(item.press.toFixed(chart1.valueDecimals)))
+			chart1.data.temp.push(parseFloat(item.temp.toFixed(chart1.valueDecimals)))
+		})
 	}
 	//console.log("chart1", chart1);
 	//console.log("prec", chart1.data.prec);
@@ -166,7 +166,7 @@ function gerarGraficos(dataJson, date) {
 		dataAverage: [],
 		valueDecimals: 1,
 		pointStart: pointStart,
-	};
+	}
 	//console.log("chart2", chart2);
 	const tminTmax = {
 		temp: {
@@ -174,27 +174,27 @@ function gerarGraficos(dataJson, date) {
 			BRAMS_ams_08km: [],
 			BAM: [],
 		},
-	};
+	}
 	// Array com o temp de WRF_ams_07km
 	if (WRF_ams_07km) {
 		WRF_ams_07km.data.forEach((item) => {
-			tminTmax.temp.WRF_ams_07km.push(parseFloat(item.temp.toFixed(chart2.valueDecimals)));
-		});
+			tminTmax.temp.WRF_ams_07km.push(parseFloat(item.temp.toFixed(chart2.valueDecimals)))
+		})
 	}
 	// Array com o temp de BRAMS_ams_08km
 	if (BRAMS_ams_08km) {
 		BRAMS_ams_08km.data.forEach((item) => {
-			tminTmax.temp.BRAMS_ams_08km.push(parseFloat(item.temp.toFixed(chart2.valueDecimals)));
-		});
+			tminTmax.temp.BRAMS_ams_08km.push(parseFloat(item.temp.toFixed(chart2.valueDecimals)))
+		})
 	}
 	// Array com o temp de BAM
 	if (BAM) {
 		BAM.data.forEach((item, index) => {
 			// BAM tem 240 arrays, esse if limitaria o array para 181, igualando-o a quantidade de arrays do WRF_ams_07km e BRAMS_ams_08km
 			if (index < 181) {
-				tminTmax.temp.BAM.push(parseFloat(item.temp.toFixed(chart2.valueDecimals)));
+				tminTmax.temp.BAM.push(parseFloat(item.temp.toFixed(chart2.valueDecimals)))
 			}
-		});
+		})
 	}
 	//console.log(tminTmax.temp);
 	// Array com o temp de tminTmax
@@ -202,11 +202,11 @@ function gerarGraficos(dataJson, date) {
 	if (WRF_ams_07km && BRAMS_ams_08km && BAM) {
 		for (let i = 0; i < tminTmax.temp.BAM.length; i++) {
 			//timestamp += i * 3600000; // Adiciona 1 hora (3600000 milisegundos) a cada iteração (i)
-			chart2.data[i] = [];
+			chart2.data[i] = []
 			//chart2.data[i][0] = timestamp;
-			chart2.data[i][0] = Math.min(tminTmax.temp.WRF_ams_07km[i], tminTmax.temp.BRAMS_ams_08km[i], tminTmax.temp.BAM[i]); // Temperatura mínima
-			chart2.data[i][1] = Math.max(tminTmax.temp.WRF_ams_07km[i], tminTmax.temp.BRAMS_ams_08km[i], tminTmax.temp.BAM[i]); // Temperatura máxima
-			chart2.dataAverage[i] = parseFloat(((chart2.data[i][0] + chart2.data[i][1]) / 2).toFixed(2)); // Temperatura média
+			chart2.data[i][0] = Math.min(tminTmax.temp.WRF_ams_07km[i], tminTmax.temp.BRAMS_ams_08km[i], tminTmax.temp.BAM[i]) // Temperatura mínima
+			chart2.data[i][1] = Math.max(tminTmax.temp.WRF_ams_07km[i], tminTmax.temp.BRAMS_ams_08km[i], tminTmax.temp.BAM[i]) // Temperatura máxima
+			chart2.dataAverage[i] = parseFloat(((chart2.data[i][0] + chart2.data[i][1]) / 2).toFixed(2)) // Temperatura média
 		}
 	}
 	//console.log("chart2.dataAverage", chart2.dataAverage);
@@ -222,19 +222,19 @@ function gerarGraficos(dataJson, date) {
 		},
 		valueDecimals: 2,
 		pointStart: pointStart,
-	};
+	}
 	// Array com o prec de WRF_ams_07km
 	if (WRF_ams_07km) {
 		WRF_ams_07km.data.forEach((item) => {
-			chart3.prec.WRF_ams_07km.push(parseFloat(item.prec.toFixed(chart3.valueDecimals)));
-		});
+			chart3.prec.WRF_ams_07km.push(parseFloat(item.prec.toFixed(chart3.valueDecimals)))
+		})
 		//console.log("prec WRF_ams_07km", chart3.prec.WRF_ams_07km);
 	}
 	// Array com o prec de BRAMS_ams_08km
 	if (BRAMS_ams_08km) {
 		BRAMS_ams_08km.data.forEach((item) => {
-			chart3.prec.BRAMS_ams_08km.push(parseFloat(item.prec.toFixed(chart3.valueDecimals)));
-		});
+			chart3.prec.BRAMS_ams_08km.push(parseFloat(item.prec.toFixed(chart3.valueDecimals)))
+		})
 		//console.log("prec BRAMS_ams_08km", chart3.prec.BRAMS_ams_08km);
 	}
 	// Array com o prec de BAM
@@ -242,9 +242,9 @@ function gerarGraficos(dataJson, date) {
 		BAM.data.forEach((item, index) => {
 			// BAM tem 240 arrays, esse if limitaria o array para 181, igualando-o a quantidade de arrays do WRF_ams_07km e BRAMS_ams_08km
 			if (index < 181) {
-				chart3.prec.BAM.push(parseFloat(item.prec.toFixed(chart3.valueDecimals)));
+				chart3.prec.BAM.push(parseFloat(item.prec.toFixed(chart3.valueDecimals)))
 			}
-		});
+		})
 		//console.log("prec BAM", chart3.prec.BAM);
 	}
 	// Array com o prec de ETA
@@ -252,10 +252,10 @@ function gerarGraficos(dataJson, date) {
 		Eta.data.forEach((item, index) => {
 			// Se ETA tiver mais de 180 arrays, esse if limitaria o array para 181
 			if (index < 181) {
-				chart3.prec.Eta.push(parseFloat(item.prec.toFixed(chart3.valueDecimals)));
+				chart3.prec.Eta.push(parseFloat(item.prec.toFixed(chart3.valueDecimals)))
 			}
-		});
-		console.log("prec ETA", chart3.prec.Eta);
+		})
+		console.log("prec ETA", chart3.prec.Eta)
 	}
 
 	// Gráfico 4 (WRF_ams_07km, BRAMS_ams_08km, BAM) de área
@@ -267,19 +267,19 @@ function gerarGraficos(dataJson, date) {
 		},
 		valueDecimals: 2,
 		pointStart: pointStart,
-	};
+	}
 	// Array com o prec de WRF_ams_07km
 	if (WRF_ams_07km) {
 		WRF_ams_07km.data.forEach((item) => {
-			chart4.prec.WRF_ams_07km.push(parseFloat(item.prec.toFixed(chart4.valueDecimals)));
-		});
+			chart4.prec.WRF_ams_07km.push(parseFloat(item.prec.toFixed(chart4.valueDecimals)))
+		})
 		//console.log("prec WRF_ams_07km", chart4.prec.WRF_ams_07km);
 	}
 	// Array com o prec de BRAMS_ams_08km
 	if (BRAMS_ams_08km) {
 		BRAMS_ams_08km.data.forEach((item) => {
-			chart4.prec.BRAMS_ams_08km.push(parseFloat(item.prec.toFixed(chart4.valueDecimals)));
-		});
+			chart4.prec.BRAMS_ams_08km.push(parseFloat(item.prec.toFixed(chart4.valueDecimals)))
+		})
 		//console.log("prec BRAMS_ams_08km", chart4.prec.BRAMS_ams_08km);
 	}
 	// Array com o prec de BAM
@@ -287,9 +287,9 @@ function gerarGraficos(dataJson, date) {
 		BAM.data.forEach((item, index) => {
 			// BAM tem 240 arrays, esse if limitaria o array para 181, igualando-o a quantidade de arrays do WRF_ams_07km e BRAMS_ams_08km
 			if (index < 181) {
-				chart4.prec.BAM.push(parseFloat(item.prec.toFixed(chart4.valueDecimals)));
+				chart4.prec.BAM.push(parseFloat(item.prec.toFixed(chart4.valueDecimals)))
 			}
-		});
+		})
 		//console.log("prec BAM", chart4.prec.BAM);
 	}
 
@@ -325,7 +325,7 @@ function gerarGraficos(dataJson, date) {
 			viewData: "Ver tabela de dados",
 			hideData: "Ocultar tabela de dados",
 		},
-	});
+	})
 
 	// Gráfico 1 (WRF_ams_07km)
 	Highcharts.chart("chart1", {
@@ -506,7 +506,7 @@ function gerarGraficos(dataJson, date) {
 				},
 			],
 		},
-	});
+	})
 
 	// Gráfico 2
 	Highcharts.chart("chart2", {
@@ -590,7 +590,7 @@ function gerarGraficos(dataJson, date) {
 				},
 			},
 		],
-	});
+	})
 
 	// Gráfico 3
 	Highcharts.chart("chart3", {
@@ -656,7 +656,7 @@ function gerarGraficos(dataJson, date) {
 				data: chart3.prec.Eta,
 			},
 		],
-	});
+	})
 
 	// Gráfico 4
 	Highcharts.chart("chart4", {
@@ -731,5 +731,5 @@ function gerarGraficos(dataJson, date) {
 				fillOpacity: 0.5,
 			},
 		],
-	});
+	})
 }
