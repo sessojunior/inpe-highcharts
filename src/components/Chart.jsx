@@ -2,13 +2,16 @@ import Highcharts from "highcharts"
 import HighchartsReact from "highcharts-react-official"
 import highchartsMore from "highcharts/highcharts-more"
 import highchartsWindbarb from "highcharts/modules/windbarb"
+import highchartsAcessibility from "highcharts/modules/accessibility"
 highchartsMore(Highcharts)
 highchartsWindbarb(Highcharts)
+highchartsAcessibility(Highcharts)
 
 export default function Chart({ date, chart, type }) {
-	const pointStart = `${date.year}-${date.month}-${date.day} ${date.hour}:00:00`
+	const dateTime = `${date.year}-${date.month}-${date.day} ${date.hour}:00:00`
+	const pointStart = Date.UTC(parseInt(dateTime.substr(0, 4)), parseInt(dateTime.substr(5, 2)) - 1, parseInt(dateTime.substr(8, 2)), parseInt(dateTime.substr(11, 2)), parseInt(dateTime.substr(14, 2)), parseInt(dateTime.substr(17, 2)))
 
-	// Global
+	// Global options
 	const optionsGlobal = {
 		global: {
 			useUTC: true,
@@ -53,6 +56,13 @@ export default function Chart({ date, chart, type }) {
 	}
 
 	// Temperatura, pressão e precipitação
+	const existsItemp = chart.data.some((item) => item.hasOwnProperty("temp"))
+	const existsIpress = chart.data.some((item) => item.hasOwnProperty("press"))
+	const existsIprec = chart.data.some((item) => item.hasOwnProperty("prec"))
+	const existsTempPressPrec = existsItemp && existsIpress && existsIprec
+	const iTemp = existsItemp ? chart.data.map((item) => parseFloat(item.temp.toFixed(1))) : []
+	const iPress = existsIpress ? chart.data.map((item) => parseFloat(item.press.toFixed(1))) : []
+	const iPrec = existsIprec ? chart.data.map((item) => parseFloat(item.prec.toFixed(1))) : []
 	const optionsTempPressPrec = {
 		...optionsGlobal,
 		chart: {
@@ -127,7 +137,7 @@ export default function Chart({ date, chart, type }) {
 		plotOptions: {
 			series: {
 				// Configura o eixo X para ser a partir da data fornecida
-				pointStart: Date.UTC(parseInt(pointStart.substr(0, 4)), parseInt(pointStart.substr(5, 2)) - 1, parseInt(pointStart.substr(8, 2)), parseInt(pointStart.substr(11, 2)), parseInt(pointStart.substr(14, 2)), parseInt(pointStart.substr(17, 2))),
+				pointStart: pointStart,
 				pointInterval: 36e5,
 			},
 		},
@@ -151,9 +161,9 @@ export default function Chart({ date, chart, type }) {
 			{
 				id: "prec",
 				name: "Precipitação",
-				type: "column",
+				type: "area",
 				yAxis: 1,
-				data: chart.data.map((item) => parseFloat(item.prec.toFixed(1))),
+				data: iPrec,
 				connectNulls: false,
 				fillOpacity: 0.5,
 				//color: "#2542FF",
@@ -165,7 +175,7 @@ export default function Chart({ date, chart, type }) {
 				name: "Pressão",
 				type: "spline",
 				yAxis: 2,
-				data: chart.data.map((item) => parseFloat(item.press.toFixed(1))),
+				data: iPress,
 				marker: {
 					enabled: false,
 				},
@@ -178,7 +188,7 @@ export default function Chart({ date, chart, type }) {
 			{
 				name: "Temperatura",
 				type: "spline",
-				data: chart.data.map((item) => parseFloat(item.temp.toFixed(1))),
+				data: iTemp,
 				//color: "#2542FF",
 				tooltip: {
 					valueSuffix: " °C",
@@ -228,8 +238,11 @@ export default function Chart({ date, chart, type }) {
 	}
 
 	// Temperatura mínima, máxima e média
-	const tempMinMax = chart.data.map((item) => [parseFloat(item.temp_mn.toFixed(2)), parseFloat(item.temp_mx.toFixed(2))])
-	const tempAverage = chart.data.map((item) => parseFloat(((parseFloat(item.temp_mn) + parseFloat(item.temp_mx)) / 2).toFixed(2)))
+	const existsTemp_mn = chart.data.some((item) => item.hasOwnProperty("temp_mn"))
+	const existsTemp_mx = chart.data.some((item) => item.hasOwnProperty("temp_mx"))
+	const existsTempMinMax = existsTemp_mn && existsTemp_mx
+	const tempMinMax = existsTempMinMax ? chart.data.map((item) => [parseFloat(item.temp_mn.toFixed(2)), parseFloat(item.temp_mx.toFixed(2))]) : []
+	const tempAverage = existsTempMinMax ? chart.data.map((item) => parseFloat(((parseFloat(item.temp_mn) + parseFloat(item.temp_mx)) / 2).toFixed(2))) : []
 	const optionsTempMinMaxMedia = {
 		...optionsGlobal,
 		chart: {
@@ -263,14 +276,9 @@ export default function Chart({ date, chart, type }) {
 		plotOptions: {
 			series: {
 				// Configura o eixo X para ser a partir da data fornecida
-				pointStart: Date.UTC(parseInt(pointStart.substr(0, 4)), parseInt(pointStart.substr(5, 2)) - 1, parseInt(pointStart.substr(8, 2)), parseInt(pointStart.substr(11, 2)), parseInt(pointStart.substr(14, 2)), parseInt(pointStart.substr(17, 2))),
+				pointStart: pointStart,
 				pointInterval: 36e5,
 			},
-		},
-		tooltip: {
-			shared: true,
-			xDateFormat: "%d/%m/%Y %H:%M",
-			valueDecimals: 1,
 		},
 		tooltip: {
 			crosshairs: true,
@@ -313,8 +321,119 @@ export default function Chart({ date, chart, type }) {
 		],
 	}
 
+	// Pressão
+	const existsPress = chart.data.some((item) => item.hasOwnProperty("prec"))
+	const press = existsPress ? chart.data.map((item) => parseFloat(item.press.toFixed(2))) : []
+	const optionsPress = {
+		chart: {
+			zoomType: "x",
+		},
+		title: {
+			text: "Pressão reduzida ao nível do mar (hPa)",
+			align: "center",
+		},
+		subtitle: {
+			text: "Fonte: CPTEC",
+			align: "center",
+		},
+		yAxis: {
+			title: {
+				text: "Pressão ao nível do mar",
+			},
+		},
+		xAxis: {
+			type: "datetime",
+			offset: 40,
+		},
+		plotOptions: {
+			series: {
+				// Configura o eixo X para ser a partir da data fornecida
+				pointStart: pointStart,
+				pointInterval: 36e5,
+			},
+		},
+		series: [
+			{
+				data: press,
+				name: "Pressão ao nivel do mar",
+				color: "#3cb1ff",
+				showInLegend: false,
+				tooltip: {
+					valueSuffix: " hPa",
+				},
+			},
+		],
+	}
+
+	// Precipitação
+	const existsPrec = chart.data.some((item) => item.hasOwnProperty("prec"))
+	const prec = existsPrec ? chart.data.map((item) => parseFloat(item.prec.toFixed(2))) : []
+	const optionsPrec = {
+		chart: {
+			type: "area",
+			zoomType: "x",
+		},
+
+		title: {
+			text: "Precipitação (mm/h)",
+			align: "center",
+		},
+		subtitle: {
+			text: "Fonte: CPTEC",
+			align: "center",
+		},
+		xAxis: [
+			{
+				type: "datetime",
+				offset: 0,
+				crosshair: true,
+			},
+		],
+		yAxis: {
+			min: 0,
+			title: {
+				text: "milimetros por hora",
+			},
+		},
+		tooltip: {
+			crosshairs: true,
+			shared: true,
+			valueSuffix: "mm/h",
+			xDateFormat: "%d/%m/%Y %H:%M",
+			valueDecimals: 2,
+		},
+		plotOptions: {
+			area: {
+				dataLabels: {
+					enabled: false, // Oculta os rótulos de dados no gráfico
+				},
+				// Configura o eixo X para ser a partir da data fornecida
+				pointStart: pointStart,
+				pointInterval: 36e5,
+				marker: {
+					enabled: false,
+					symbol: "circle",
+					radius: 2,
+					states: {
+						hover: {
+							enabled: true,
+						},
+					},
+				},
+			},
+		},
+		series: [
+			{
+				name: "Precipitação",
+				data: prec,
+				fillOpacity: 0.5,
+			},
+		],
+	}
+
 	// Vento
-	const wind = chart.data.map((item) => [parseFloat(item.wind_speed.toFixed(2)), parseFloat(item.wind_dir.toFixed(2))])
+	const existsWind = chart.data.some((item) => item.hasOwnProperty("wind"))
+	const wind = existsWind ? chart.data.map((item) => [parseFloat(item.wind_speed.toFixed(2)), parseFloat(item.wind_dir.toFixed(2))]) : []
 	const optionsWind = {
 		chart: {
 			zoomType: "x",
@@ -341,7 +460,7 @@ export default function Chart({ date, chart, type }) {
 		plotOptions: {
 			series: {
 				// Configura o eixo X para ser a partir da data fornecida
-				pointStart: Date.UTC(parseInt(pointStart.substr(0, 4)), parseInt(pointStart.substr(5, 2)) - 1, parseInt(pointStart.substr(8, 2)), parseInt(pointStart.substr(11, 2)), parseInt(pointStart.substr(14, 2)), parseInt(pointStart.substr(17, 2))),
+				pointStart: pointStart,
 				pointInterval: 36e5,
 			},
 		},
@@ -386,17 +505,335 @@ export default function Chart({ date, chart, type }) {
 		],
 	}
 
+	// Umidade relativa
+	const existsUr = chart.data.some((item) => item.hasOwnProperty("ur"))
+	const ur = existsUr ? chart.data.map((item) => parseFloat(item.ur.toFixed(2))) : []
+	const optionsUr = {
+		chart: {
+			zoomType: "x",
+		},
+		title: {
+			text: "Umidade Relativa a 2m do solo (%)",
+			align: "center",
+		},
+		subtitle: {
+			text: "Fonte: CPTEC",
+			align: "center",
+		},
+		yAxis: {
+			title: {
+				text: "Umidade relativa",
+			},
+		},
+		xAxis: {
+			type: "datetime",
+			offset: 40,
+		},
+		plotOptions: {
+			series: {
+				// Configura o eixo X para ser a partir da data fornecida
+				pointStart: pointStart,
+				pointInterval: 36e5,
+			},
+		},
+		series: [
+			{
+				data: ur,
+				name: "Umidade Relativa",
+				color: Highcharts.getOptions().colors[1],
+				showInLegend: false,
+				tooltip: {
+					valueSuffix: " %",
+				},
+			},
+		],
+	}
+
+	// Nuvens
+	const existsLowCloud = chart.data.some((item) => item.hasOwnProperty("low_cloud"))
+	const existsMidCloud = chart.data.some((item) => item.hasOwnProperty("mid_cloud"))
+	const existsHighCloud = chart.data.some((item) => item.hasOwnProperty("high_cloud"))
+	const existsCloud = existsLowCloud && existsMidCloud && existsHighCloud
+	const lowCloud = existsLowCloud ? chart.data.map((item) => parseFloat(item.low_cloud.toFixed(2))) : []
+	const midCloud = existsMidCloud ? chart.data.map((item) => parseFloat(item.mid_cloud.toFixed(2))) : []
+	const highCloud = existsHighCloud ? chart.data.map((item) => parseFloat(item.high_cloud.toFixed(2))) : []
+	const optionsCloud = {
+		chart: {
+			type: "area",
+			zoomType: "x",
+		},
+		title: {
+			text: "Cobertura de nuvens (%)",
+			align: "center",
+		},
+		subtitle: {
+			text: "Fonte: CPTEC",
+			align: "center",
+		},
+		yAxis: {
+			title: {
+				text: "Cobertura de nuvens",
+			},
+		},
+		xAxis: {
+			type: "datetime",
+			offset: 40,
+		},
+		plotOptions: {
+			series: {
+				// Configura o eixo X para ser a partir da data fornecida
+				pointStart: pointStart,
+				pointInterval: 36e5,
+			},
+		},
+		series: [
+			{
+				data: highCloud,
+				name: "Nuvens altas",
+				color: "#b7ff00",
+				showInLegend: true,
+				tooltip: {
+					valueSuffix: " %",
+				},
+			},
+			{
+				data: midCloud,
+				name: "Nuvens médias",
+				color: "#ff8000",
+				showInLegend: true,
+				tooltip: {
+					valueSuffix: " %",
+				},
+			},
+			{
+				data: lowCloud,
+				name: "Nuvens baixas",
+				color: "#3cb1ff",
+				showInLegend: true,
+				tooltip: {
+					valueSuffix: " %",
+				},
+			},
+		],
+	}
+
+	// Monóxido de carbono
+	const existsCo_40 = chart.data.some((item) => item.hasOwnProperty("co_40"))
+	const existsCo_700 = chart.data.some((item) => item.hasOwnProperty("co_700"))
+	const existsCo_1400 = chart.data.some((item) => item.hasOwnProperty("co_1400"))
+	const existsCo_5400 = chart.data.some((item) => item.hasOwnProperty("co_5400"))
+	const existsCo_10200 = chart.data.some((item) => item.hasOwnProperty("co_10200"))
+	const existsCo = existsCo_40 && existsCo_700 && existsCo_1400 && existsCo_5400 && existsCo_10200
+	const co_40 = existsCo_40 ? chart.data.map((item) => parseFloat(item.co_40.toFixed(2))) : []
+	const co_700 = existsCo_700 ? chart.data.map((item) => parseFloat(item.co_700.toFixed(2))) : []
+	const co_1400 = existsCo_1400 ? chart.data.map((item) => parseFloat(item.co_1400.toFixed(2))) : []
+	const co_5400 = existsCo_5400 ? chart.data.map((item) => parseFloat(item.co_5400.toFixed(2))) : []
+	const co_10200 = existsCo_10200 ? chart.data.map((item) => parseFloat(item.co_10200.toFixed(2))) : []
+	const optionsCo = {
+		chart: {
+			type: "line",
+			zoomType: "x",
+		},
+		title: {
+			text: "Monóxido de Carbono (ppb)",
+			align: "center",
+		},
+		subtitle: {
+			text: "Fonte: CPTEC",
+			align: "center",
+		},
+		yAxis: {
+			title: {
+				text: "Monóxido de Carbono",
+			},
+		},
+		xAxis: {
+			type: "datetime",
+			offset: 40,
+		},
+		plotOptions: {
+			series: {
+				// Configura o eixo X para ser a partir da data fornecida
+				pointStart: pointStart,
+				pointInterval: 108e5,
+			},
+		},
+		series: [
+			{
+				data: co_40,
+				name: "40 metros do solo",
+				showInLegend: true,
+				tooltip: {
+					valueSuffix: " ppb",
+				},
+			},
+			{
+				data: co_700,
+				name: "700 metros do solo",
+				showInLegend: true,
+				tooltip: {
+					valueSuffix: " ppb",
+				},
+			},
+			{
+				data: co_1400,
+				name: "1400 metros do solo",
+				showInLegend: true,
+				tooltip: {
+					valueSuffix: " ppb",
+				},
+			},
+			{
+				data: co_5400,
+				name: "5400 metros do solo",
+				showInLegend: true,
+				tooltip: {
+					valueSuffix: " ppb",
+				},
+			},
+			{
+				data: co_10200,
+				name: "10200 metros do solo",
+				showInLegend: true,
+				tooltip: {
+					valueSuffix: " ppb",
+				},
+			},
+		],
+	}
+
+	// Material micro-particulado
+	const existsPm25_40 = chart.data.some((item) => item.hasOwnProperty("pm25_40"))
+	const existsPm25_700 = chart.data.some((item) => item.hasOwnProperty("pm25_700"))
+	const existsPm25_1400 = chart.data.some((item) => item.hasOwnProperty("pm25_1400"))
+	const existsPm25_5400 = chart.data.some((item) => item.hasOwnProperty("pm25_5400"))
+	const existsPm25_10200 = chart.data.some((item) => item.hasOwnProperty("pm25_10200"))
+	const existsPm25 = existsPm25_40 && existsPm25_700 && existsPm25_1400 && existsPm25_5400 && existsPm25_10200
+	const pm25_40 = existsPm25 ? chart.data.map((item) => parseFloat(item.pm25_40.toFixed(2))) : []
+	const pm25_700 = existsPm25_700 ? chart.data.map((item) => parseFloat(item.pm25_700.toFixed(2))) : []
+	const pm25_1400 = existsPm25_1400 ? chart.data.map((item) => parseFloat(item.pm25_1400.toFixed(2))) : []
+	const pm25_5400 = existsPm25_5400 ? chart.data.map((item) => parseFloat(item.pm25_5400.toFixed(2))) : []
+	const pm25_10200 = existsPm25_10200 ? chart.data.map((item) => parseFloat(item.pm25_10200.toFixed(2))) : []
+	const optionsPm25 = {
+		chart: {
+			type: "line",
+			zoomType: "x",
+		},
+		title: {
+			text: "Material Micro-particulado 2.5nm (ug/m³)",
+			align: "center",
+		},
+		subtitle: {
+			text: "Fonte: CPTEC",
+			align: "center",
+		},
+		yAxis: {
+			title: {
+				text: "Material Micro-particulado",
+			},
+		},
+		xAxis: {
+			type: "datetime",
+			offset: 40,
+		},
+		plotOptions: {
+			series: {
+				// Configura o eixo X para ser a partir da data fornecida
+				pointStart: pointStart,
+				pointInterval: 108e5,
+			},
+		},
+		series: [
+			{
+				data: pm25_40,
+				name: "40 metros do solo",
+				showInLegend: true,
+				tooltip: {
+					valueSuffix: " ug/m³",
+				},
+			},
+			{
+				data: pm25_700,
+				name: "700 metros do solo",
+				showInLegend: true,
+				tooltip: {
+					valueSuffix: " ug/m³",
+				},
+			},
+			{
+				data: pm25_1400,
+				name: "1400 metros do solo",
+				showInLegend: true,
+				tooltip: {
+					valueSuffix: " ug/m³",
+				},
+			},
+			{
+				data: pm25_5400,
+				name: "5400 metros do solo",
+				showInLegend: true,
+				tooltip: {
+					valueSuffix: " ug/m³",
+				},
+			},
+			{
+				data: pm25_10200,
+				name: "10200 metros do solo",
+				showInLegend: true,
+				tooltip: {
+					valueSuffix: " ug/m³",
+				},
+			},
+		],
+	}
+
 	// Type Options
 	let options = ""
 	if (type === "tempPressPrec") {
-		// Temperatura, Pressão e Precipitação
+		if (!existsTempPressPrec) {
+			return null
+		}
 		options = optionsTempPressPrec
 	} else if (type === "tempMinMaxMedia") {
-		// Temperatura minima, maxima e media
+		if (!existsTempMinMax) {
+			return null
+		}
 		options = optionsTempMinMaxMedia
+	} else if (type === "press") {
+		if (!existsPress) {
+			return null
+		}
+		options = optionsPress
+	} else if (type === "prec") {
+		if (!existsPrec) {
+			return null
+		}
+		options = optionsPrec
 	} else if (type === "wind") {
-		// Vento
+		if (!existsWind) {
+			return null
+		}
 		options = optionsWind
+	} else if (type === "ur") {
+		if (!existsUr) {
+			return null
+		}
+		options = optionsUr
+	} else if (type === "cloud") {
+		if (!existsCloud) {
+			return null
+		}
+		options = optionsCloud
+	} else if (type === "co") {
+		if (!existsCo) {
+			return null
+		}
+		options = optionsCo
+	} else if (type === "pm25") {
+		if (!existsPm25) {
+			return null
+		}
+		options = optionsPm25
 	}
 
 	return (

@@ -9,8 +9,8 @@ export default function App() {
 		hour: "00",
 	}
 	const cityId = 1083
-	const model = "WRF"
-	const product = "ams_07km"
+	const model = "BRAMS" // Ex: WRF
+	const product = "ams_15km" // Ex: ams_07km
 
 	return (
 		<div className='p-8'>
