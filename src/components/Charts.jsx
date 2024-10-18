@@ -2,14 +2,10 @@ import { useEffect, useState } from "react"
 
 import Chart from "./Chart"
 
-export default function Charts({ date, cityId, model, product }) {
+export default function Charts({ date, urlChart }) {
 	const [chart, setChart] = useState({})
 	const [loading, setLoading] = useState(true)
 	const [error, setError] = useState(null)
-
-	// const urlJson = "https://ftp.cptec.inpe.br/modelos/tempo/{{model}}/{{product}}/recortes/grh/json2/{{year}}/{{month}}/{{day}}/{{hour}}/{{cityId}}.json"
-	const urlJson = "https://ftp.cptec.inpe.br/modelos/produtos/{{model}}/{{product}}/grh/json2/{{year}}/{{month}}/{{day}}/{{hour}}/{{cityId}}.json"
-	const urlChart = urlJson.replaceAll("{{year}}", date.year).replaceAll("{{month}}", date.month).replaceAll("{{day}}", date.day).replaceAll("{{hour}}", date.hour).replaceAll("{{cityId}}", cityId).replaceAll("{{model}}", model).replaceAll("{{product}}", product)
 
 	useEffect(() => {
 		async function fetchJson() {
