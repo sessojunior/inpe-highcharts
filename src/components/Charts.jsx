@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 
 import Chart from "./Chart"
 
-export default function Charts({ date, urlChart }) {
+export default function Charts({ date, urlCharts }) {
 	const [chart, setChart] = useState({})
 	const [loading, setLoading] = useState(true)
 	const [error, setError] = useState(null)
@@ -11,7 +11,7 @@ export default function Charts({ date, urlChart }) {
 		async function fetchJson() {
 			setLoading(true)
 			try {
-				const response = await fetch(urlChart)
+				const response = await fetch(urlCharts)
 				const data = await response.json()
 				if (data.datasets?.length == 0) {
 					throw new Error("Dados não encontrados no JSON")
@@ -51,7 +51,7 @@ export default function Charts({ date, urlChart }) {
 
 	return (
 		<div>
-			<h2 className='text-3xl font-bold py-4 text-red-600'>Meteogramas</h2> <p className='text-lg pb-4'>URL: {urlChart}</p>
+			<h2 className='text-3xl font-bold py-4 text-red-600'>Meteogramas</h2> <p className='text-lg pb-4'>URL: {urlCharts}</p>
 			<Chart date={date} chart={chart} type='tempPressPrec' />
 			<Chart date={date} chart={chart} type='tempMinMaxMedia' />
 			<Chart date={date} chart={chart} type='press' />
