@@ -2,8 +2,9 @@ import { useEffect, useState } from "react"
 
 import Chart from "./Chart"
 
-export default function Charts({ date, urlCharts }) {
-	const [chart, setChart] = useState({})
+export default function Charts({ date, urlJson, urlCsv }) {
+	const [dataJson, setDataJson] = useState(null)
+	const [dataCsv, setDataCsv] = useState(null)
 	const [loading, setLoading] = useState(true)
 	const [error, setError] = useState(null)
 
@@ -11,21 +12,39 @@ export default function Charts({ date, urlCharts }) {
 		async function fetchJson() {
 			setLoading(true)
 			try {
-				const response = await fetch(urlCharts)
+				const response = await fetch(urlJson)
 				const data = await response.json()
 				if (data.datasets?.length == 0) {
 					throw new Error("Dados não encontrados no JSON")
 				}
-				setChart(data.datasets[0])
+				setDataJson(data.datasets[0])
 			} catch (error) {
-				console.log("Erro ao obter dados do JSON: " + url + ".", error)
+				console.log("Erro ao obter dados do JSON: " + urlJson + ".", error)
 				setError(error)
 			} finally {
 				setLoading(false)
 			}
 		}
 
-		fetchJson()
+		async function fetchCsv() {
+			setLoading(true)
+			try {
+				const response = await fetch(urlCsv)
+				const text = await response.text()
+				if (text == "") {
+					throw new Error("Dados não encontrados no CSV")
+				}
+				setDataCsv(text)
+			} catch (error) {
+				console.log("Erro ao obter dados do CSV: " + urlCsv + ".", error)
+				setError(error)
+			} finally {
+				setLoading(false)
+			}
+		}
+
+		if (urlJson) fetchJson()
+		if (urlCsv) fetchCsv()
 	}, [])
 
 	if (loading) {
@@ -36,7 +55,7 @@ export default function Charts({ date, urlCharts }) {
 		return <div className='text-xl py-4'>{error.message}</div>
 	}
 
-	//console.log(chart)
+	//console.log("type chart:", type, chart)
 
 	// Tipos de charts:
 	// tempPressPrec - Temperatura, pressão e precipitação
@@ -49,18 +68,24 @@ export default function Charts({ date, urlCharts }) {
 	// co - Monóxido de carbono
 	// pm25 - Material micro-particulado
 
+	// heatmapCo - Heatmap de monóxido de carbono
+
 	return (
 		<div>
-			<h2 className='text-3xl font-bold py-4 text-red-600'>Meteogramas</h2> <p className='text-lg pb-4'>URL: {urlCharts}</p>
-			<Chart date={date} chart={chart} type='tempPressPrec' />
-			<Chart date={date} chart={chart} type='tempMinMaxMedia' />
-			<Chart date={date} chart={chart} type='press' />
-			<Chart date={date} chart={chart} type='prec' />
-			<Chart date={date} chart={chart} type='wind' />
-			<Chart date={date} chart={chart} type='ur' />
-			<Chart date={date} chart={chart} type='cloud' />
-			<Chart date={date} chart={chart} type='co' />
-			<Chart date={date} chart={chart} type='pm25' />
+			<h2 className='text-3xl font-bold py-4 text-red-600'>Meteogramas</h2>
+			<p className='text-lg pb-4'>URL JSON: {urlJson}</p>
+			<p className='text-lg pb-4'>URL CSV: {urlCsv}</p>
+			<Chart date={date} dataJson={dataJson} dataCsv={dataCsv} product='heatmapCo' />
+
+			<Chart date={date} dataJson={dataJson} dataCsv={dataCsv} product='tempPressPrec' />
+			<Chart date={date} dataJson={dataJson} dataCsv={dataCsv} product='tempMinMaxMedia' />
+			<Chart date={date} dataJson={dataJson} dataCsv={dataCsv} product='press' />
+			<Chart date={date} dataJson={dataJson} dataCsv={dataCsv} product='prec' />
+			<Chart date={date} dataJson={dataJson} dataCsv={dataCsv} product='wind' />
+			<Chart date={date} dataJson={dataJson} dataCsv={dataCsv} product='ur' />
+			<Chart date={date} dataJson={dataJson} dataCsv={dataCsv} product='cloud' />
+			<Chart date={date} dataJson={dataJson} dataCsv={dataCsv} product='co' />
+			<Chart date={date} dataJson={dataJson} dataCsv={dataCsv} product='pm25' />
 		</div>
 	)
 }

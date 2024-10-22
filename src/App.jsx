@@ -5,17 +5,13 @@ export default function App() {
 	const date = {
 		year: "2024",
 		month: "10",
-		day: "20",
+		day: "22",
 		turn: "00",
 	}
-	const cityId = "1083"
+	const cityId = 3
 
-	const translateUrl = (url, cityId, date) => {
-		return url.replace("{{year}}", date.year).replace("{{month}}", date.month).replace("{{day}}", date.day).replace("{{turn}}", date.turn).replace("{{cityId}}", cityId)
-	}
-
-	const urlJson1 = "https://ftp.cptec.inpe.br/modelos/tempo/WRF/ams_07km/recortes/grh/json2/{{year}}/{{month}}/{{day}}/{{turn}}/{{cityId}}.json"
-	const urlJson2 = "https://ftp.cptec.inpe.br/modelos/produtos/BRAMS/ams_15km/grh/json2/{{year}}/{{month}}/{{day}}/{{turn}}/{{cityId}}.json"
+	const urlJson = "https://ftp.cptec.inpe.br/modelos/produtos/BRAMS/ams_15km/grh/json2/{{year}}/{{month}}/{{day}}/{{turn}}/{{cityId}}.json"
+	const urlCsv = "https://ftp.cptec.inpe.br/modelos/produtos/BRAMS/ams_15km/grh/csv/{{year}}/{{month}}/{{day}}/{{turn}}/{{cityId}}.csv"
 
 	return (
 		<div className='p-8'>
@@ -23,8 +19,7 @@ export default function App() {
 			<p className='text-lg'>
 				Data: {date.year}-{date.month}-{date.day} {date.turn}z
 			</p>
-			<Charts date={date} urlCharts={translateUrl(urlJson1, cityId, date)} />
-			<Charts date={date} urlCharts={translateUrl(urlJson2, cityId, date)} />
+			<Charts date={date} urlJson={urlJson ? urlJson.replace("{{year}}", date.year).replace("{{month}}", date.month).replace("{{day}}", date.day).replace("{{turn}}", date.turn).replace("{{cityId}}", cityId) : null} urlCsv={urlCsv ? urlCsv.replace("{{year}}", date.year).replace("{{month}}", date.month).replace("{{day}}", date.day).replace("{{turn}}", date.turn).replace("{{cityId}}", cityId) : null} />
 		</div>
 	)
 }
