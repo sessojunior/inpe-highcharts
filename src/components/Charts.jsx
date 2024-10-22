@@ -67,16 +67,15 @@ export default function Charts({ date, urlJson, urlCsv }) {
 	// cloud - Nuvens
 	// co - Monóxido de carbono
 	// pm25 - Material micro-particulado
-
 	// heatmapCo - Heatmap de monóxido de carbono
+	// heatmapPm25 - Heatmap de material micro-particulado
+	// heatmapNox - Heatmap de óxido de nitrogenio
 
 	return (
 		<div>
 			<h2 className='text-3xl font-bold py-4 text-red-600'>Meteogramas</h2>
 			<p className='text-lg pb-4'>URL JSON: {urlJson}</p>
 			<p className='text-lg pb-4'>URL CSV: {urlCsv}</p>
-			<Chart date={date} dataJson={dataJson} dataCsv={dataCsv} product='heatmapCo' />
-
 			<Chart date={date} dataJson={dataJson} dataCsv={dataCsv} product='tempPressPrec' />
 			<Chart date={date} dataJson={dataJson} dataCsv={dataCsv} product='tempMinMaxMedia' />
 			<Chart date={date} dataJson={dataJson} dataCsv={dataCsv} product='press' />
@@ -86,6 +85,9 @@ export default function Charts({ date, urlJson, urlCsv }) {
 			<Chart date={date} dataJson={dataJson} dataCsv={dataCsv} product='cloud' />
 			<Chart date={date} dataJson={dataJson} dataCsv={dataCsv} product='co' />
 			<Chart date={date} dataJson={dataJson} dataCsv={dataCsv} product='pm25' />
+			<Chart date={date} dataJson={dataJson} dataCsv={dataCsv} product='heatmapCo' />
+			<Chart date={date} dataJson={dataJson} dataCsv={dataCsv} product='heatmapPm25' />
+			<Chart date={date} dataJson={dataJson} dataCsv={dataCsv} product='heatmapNox' />
 		</div>
 	)
 }

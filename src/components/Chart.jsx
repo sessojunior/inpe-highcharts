@@ -950,12 +950,12 @@ export default function Chart({ date, dataJson, dataCsv, product }) {
 					[0.5, "#fffbbc"], // Amarelo para valores médios
 					[1, "#c4463a"], // Vermelho para valores altos
 				],
-				min: 0, // Ajuste conforme seus dados
-				max: 1000, // Ajuste conforme seus dados (por exemplo, concentração de CO)
+				min: 0,
+				max: 500,
 				startOnTick: false,
 				endOnTick: false,
 				labels: {
-					format: "{value} ppm", // Exemplo: concentração de CO em ppm
+					format: "{value} ppm",
 				},
 			},
 			series: [
@@ -973,6 +973,168 @@ export default function Chart({ date, dataJson, dataCsv, product }) {
 			],
 		}
 		options = optionsHeatmapCo
+	}
+
+	// Heatmap de material micro-particulado
+	if (product === "heatmapPm25") {
+		const { data, minDate, maxDate } = parseCsvToHeatmapData(dataCsv, "pm25")
+		const optionsHeatmapPm25 = {
+			chart: {
+				type: "heatmap",
+			},
+			boost: {
+				useGPUTranslations: true,
+			},
+			title: {
+				text: "Heatmap - Material Micro-particulado (PM25)",
+				align: "left",
+				x: 40,
+			},
+			subtitle: {
+				text: "Variação de PM25 ao longo da elevação e do tempo",
+				align: "left",
+				x: 40,
+			},
+			xAxis: {
+				type: "datetime", // O eixo x será baseado na data e hora
+				min: minDate, // Valor mínimo da data
+				max: maxDate, // Valor máximo da data
+				labels: {
+					align: "left",
+					x: 5,
+					y: 14,
+					format: "{value:%d/%m %Hh}", // Formato da data
+				},
+				showLastLabel: false,
+				tickLength: 16,
+			},
+			yAxis: {
+				title: {
+					text: "Elevação (km)", // O eixo y representa a elevação
+				},
+				labels: {
+					format: "{value} km", // Formato para a elevação
+				},
+				minPadding: 0,
+				maxPadding: 0,
+				startOnTick: false,
+				endOnTick: false,
+				tickPositions: [0, 4, 8, 12, 16, 20, 24, 28, 32],
+				tickWidth: 1,
+				min: 0,
+				max: 32, // Configuração para 32 níveis de elevação, conforme discutido anteriormente
+				reversed: false,
+			},
+			colorAxis: {
+				stops: [
+					[0, "#3060cf"], // Azul para valores baixos
+					[0.5, "#fffbbc"], // Amarelo para valores médios
+					[1, "#c4463a"], // Vermelho para valores altos
+				],
+				min: 0,
+				max: 10,
+				startOnTick: false,
+				endOnTick: false,
+				labels: {
+					format: "{value} ug/m³",
+				},
+			},
+			series: [
+				{
+					data: data, // Função que processa o CSV e gera os dados
+					boostThreshold: 100,
+					borderWidth: 0,
+					nullColor: "#EFEFEF",
+					colsize: 3 * 36e5, // Intervalo de 3 horas (ajuste conforme necessidade)
+					tooltip: {
+						headerFormat: "Concentração de PM25<br/>",
+						pointFormat: "{point.x:%d/%m %H:%M}, elevação: {point.y} km: <b>{point.value} ug/m³</b>",
+					},
+				},
+			],
+		}
+		options = optionsHeatmapPm25
+	}
+
+	// Heatmap de óxido de nitrogenio
+	if (product === "heatmapNox") {
+		const { data, minDate, maxDate } = parseCsvToHeatmapData(dataCsv, "nox")
+		const optionsHeatmapNox = {
+			chart: {
+				type: "heatmap",
+			},
+			boost: {
+				useGPUTranslations: true,
+			},
+			title: {
+				text: "Heatmap - Óxido de Nitrogenio (NOx)",
+				align: "left",
+				x: 40,
+			},
+			subtitle: {
+				text: "Variação de NOx ao longo da elevação e do tempo",
+				align: "left",
+				x: 40,
+			},
+			xAxis: {
+				type: "datetime", // O eixo x será baseado na data e hora
+				min: minDate, // Valor mínimo da data
+				max: maxDate, // Valor máximo da data
+				labels: {
+					align: "left",
+					x: 5,
+					y: 14,
+					format: "{value:%d/%m %Hh}", // Formato da data
+				},
+				showLastLabel: false,
+				tickLength: 16,
+			},
+			yAxis: {
+				title: {
+					text: "Elevação (km)", // O eixo y representa a elevação
+				},
+				labels: {
+					format: "{value} km", // Formato para a elevação
+				},
+				minPadding: 0,
+				maxPadding: 0,
+				startOnTick: false,
+				endOnTick: false,
+				tickPositions: [0, 4, 8, 12, 16, 20, 24, 28, 32],
+				tickWidth: 1,
+				min: 0,
+				max: 32, // Configuração para 32 níveis de elevação, conforme discutido anteriormente
+				reversed: false,
+			},
+			colorAxis: {
+				stops: [
+					[0, "#3060cf"], // Azul para valores baixos
+					[0.5, "#fffbbc"], // Amarelo para valores médios
+					[1, "#c4463a"], // Vermelho para valores altos
+				],
+				min: 0,
+				max: 1,
+				startOnTick: false,
+				endOnTick: false,
+				labels: {
+					format: "{value} ppb",
+				},
+			},
+			series: [
+				{
+					data: data, // Função que processa o CSV e gera os dados
+					boostThreshold: 100,
+					borderWidth: 0,
+					nullColor: "#EFEFEF",
+					colsize: 3 * 36e5, // Intervalo de 3 horas (ajuste conforme necessidade)
+					tooltip: {
+						headerFormat: "Concentração de PM25<br/>",
+						pointFormat: "{point.x:%d/%m %H:%M}, elevação: {point.y} km: <b>{point.value} ppb</b>",
+					},
+				},
+			],
+		}
+		options = optionsHeatmapNox
 	}
 
 	return (
