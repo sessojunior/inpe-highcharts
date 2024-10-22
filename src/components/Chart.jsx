@@ -8,7 +8,7 @@ highchartsWindbarb(Highcharts)
 highchartsAcessibility(Highcharts)
 
 export default function Chart({ date, chart, type }) {
-	const dateTime = `${date.year}-${date.month}-${date.day} ${date.hour}:00:00`
+	const dateTime = `${date.year}-${date.month}-${date.day} ${date.turn}:00:00`
 	const pointStart = Date.UTC(parseInt(dateTime.substr(0, 4)), parseInt(dateTime.substr(5, 2)) - 1, parseInt(dateTime.substr(8, 2)), parseInt(dateTime.substr(11, 2)), parseInt(dateTime.substr(14, 2)), parseInt(dateTime.substr(17, 2)))
 
 	// Global options

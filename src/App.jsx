@@ -5,13 +5,13 @@ export default function App() {
 	const date = {
 		year: "2024",
 		month: "10",
-		day: "17",
+		day: "20",
 		turn: "00",
 	}
 	const cityId = "1083"
 
 	const translateUrl = (url, cityId, date) => {
-		return url.replace("{{year}}", date.year).replace("{{month}}", date.month).replace("{{day}}", date.day).replace("{{turn}}", date.turn).replace("{{cityId}}", cityId).replace("{{model}}", model).replace("{{product}}", product)
+		return url.replace("{{year}}", date.year).replace("{{month}}", date.month).replace("{{day}}", date.day).replace("{{turn}}", date.turn).replace("{{cityId}}", cityId)
 	}
 
 	const urlJson1 = "https://ftp.cptec.inpe.br/modelos/tempo/WRF/ams_07km/recortes/grh/json2/{{year}}/{{month}}/{{day}}/{{turn}}/{{cityId}}.json"
