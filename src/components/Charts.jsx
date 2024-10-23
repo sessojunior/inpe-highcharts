@@ -2,24 +2,24 @@ import { useEffect, useState } from "react"
 
 import Chart from "./Chart"
 
-export default function Charts({ date, urlJson, urlCsv }) {
-	const [dataJson, setDataJson] = useState(null)
+export default function Charts({ date, urlCharts, urlCsv }) {
+	const [dataCharts, setDataCharts] = useState(null)
 	const [dataCsv, setDataCsv] = useState(null)
 	const [loading, setLoading] = useState(true)
 	const [error, setError] = useState(null)
 
 	useEffect(() => {
-		async function fetchJson() {
+		async function fetchCharts() {
 			setLoading(true)
 			try {
-				const response = await fetch(urlJson)
+				const response = await fetch(urlCharts)
 				const data = await response.json()
 				if (data.datasets?.length == 0) {
 					throw new Error("Dados não encontrados no JSON")
 				}
-				setDataJson(data.datasets[0])
+				setDataCharts(data.datasets[0])
 			} catch (error) {
-				console.log("Erro ao obter dados do JSON: " + urlJson + ".", error)
+				console.log("Erro ao obter dados do JSON: " + urlCharts + ".", error)
 				setError(error)
 			} finally {
 				setLoading(false)
@@ -43,7 +43,7 @@ export default function Charts({ date, urlJson, urlCsv }) {
 			}
 		}
 
-		if (urlJson) fetchJson()
+		if (urlCharts) fetchCharts()
 		if (urlCsv) fetchCsv()
 	}, [])
 
@@ -54,8 +54,6 @@ export default function Charts({ date, urlJson, urlCsv }) {
 	if (error) {
 		return <div className='text-xl py-4'>{error.message}</div>
 	}
-
-	//console.log("type chart:", type, chart)
 
 	// Tipos de charts:
 	// tempPressPrec - Temperatura, pressão e precipitação
@@ -74,20 +72,28 @@ export default function Charts({ date, urlJson, urlCsv }) {
 	return (
 		<div>
 			<h2 className='text-3xl font-bold py-4 text-red-600'>Meteogramas</h2>
-			<p className='text-lg pb-4'>URL JSON: {urlJson}</p>
+			<p className='text-lg pb-4'>URL Charts: {urlCharts}</p>
 			<p className='text-lg pb-4'>URL CSV: {urlCsv}</p>
-			<Chart date={date} dataJson={dataJson} dataCsv={dataCsv} product='tempPressPrec' />
-			<Chart date={date} dataJson={dataJson} dataCsv={dataCsv} product='tempMinMaxMedia' />
-			<Chart date={date} dataJson={dataJson} dataCsv={dataCsv} product='press' />
-			<Chart date={date} dataJson={dataJson} dataCsv={dataCsv} product='prec' />
-			<Chart date={date} dataJson={dataJson} dataCsv={dataCsv} product='wind' />
-			<Chart date={date} dataJson={dataJson} dataCsv={dataCsv} product='ur' />
-			<Chart date={date} dataJson={dataJson} dataCsv={dataCsv} product='cloud' />
-			<Chart date={date} dataJson={dataJson} dataCsv={dataCsv} product='co' />
-			<Chart date={date} dataJson={dataJson} dataCsv={dataCsv} product='pm25' />
-			<Chart date={date} dataJson={dataJson} dataCsv={dataCsv} product='heatmapCo' />
-			<Chart date={date} dataJson={dataJson} dataCsv={dataCsv} product='heatmapPm25' />
-			<Chart date={date} dataJson={dataJson} dataCsv={dataCsv} product='heatmapNox' />
+			{dataCharts !== null && (
+				<>
+					<Chart date={date} dataCharts={dataCharts} product='tempPressPrec' />
+					<Chart date={date} dataCharts={dataCharts} product='tempMinMaxMedia' />
+					<Chart date={date} dataCharts={dataCharts} product='press' />
+					<Chart date={date} dataCharts={dataCharts} product='prec' />
+					<Chart date={date} dataCharts={dataCharts} product='wind' />
+					<Chart date={date} dataCharts={dataCharts} product='ur' />
+					<Chart date={date} dataCharts={dataCharts} product='cloud' />
+					<Chart date={date} dataCharts={dataCharts} product='co' />
+					<Chart date={date} dataCharts={dataCharts} product='pm25' />
+				</>
+			)}
+			{dataCsv !== null && (
+				<>
+					<Chart date={date} dataCsv={dataCsv} product='heatmapCo' />
+					<Chart date={date} dataCsv={dataCsv} product='heatmapPm25' />
+					<Chart date={date} dataCsv={dataCsv} product='heatmapNox' />
+				</>
+			)}
 		</div>
 	)
 }

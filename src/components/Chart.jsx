@@ -13,12 +13,12 @@ highchartsAcessibility(Highcharts)
 highchartsExport(Highcharts)
 highchartsExportData(Highcharts)
 
-export default function Chart({ date, dataJson, dataCsv, product }) {
+export default function Chart({ date, dataCharts = null, dataCsv = null, product }) {
 	const dateTime = `${date.year}-${date.month}-${date.day} ${date.turn}:00:00`
 	const pointStart = Date.UTC(parseInt(dateTime.substr(0, 4)), parseInt(dateTime.substr(5, 2)) - 1, parseInt(dateTime.substr(8, 2)), parseInt(dateTime.substr(11, 2)), parseInt(dateTime.substr(14, 2)), parseInt(dateTime.substr(17, 2)))
 
 	// Função para converter CSV em dados para o heatmap
-	function parseCsvToHeatmapData(csvString, valueType) {
+	const parseCsvToHeatmapData = (csvString, valueType) => {
 		const rows = csvString.trim().split("\n")
 		const data = []
 		const headers = rows[0].split(",")
@@ -107,16 +107,16 @@ export default function Chart({ date, dataJson, dataCsv, product }) {
 
 	// Temperatura, pressão e precipitação
 	if (product === "tempPressPrec") {
-		const existsItemp = dataJson.data.some((item) => item.hasOwnProperty("temp"))
-		const existsIpress = dataJson.data.some((item) => item.hasOwnProperty("press"))
-		const existsIprec = dataJson.data.some((item) => item.hasOwnProperty("prec"))
+		const existsItemp = dataCharts.data.some((item) => item.hasOwnProperty("temp"))
+		const existsIpress = dataCharts.data.some((item) => item.hasOwnProperty("press"))
+		const existsIprec = dataCharts.data.some((item) => item.hasOwnProperty("prec"))
 		const existsTempPressPrec = existsItemp && existsIpress && existsIprec
 		if (!existsTempPressPrec) {
 			return null
 		}
-		const iTemp = existsItemp ? dataJson.data.map((item) => parseFloat(item.temp.toFixed(1))) : []
-		const iPress = existsIpress ? dataJson.data.map((item) => parseFloat(item.press.toFixed(1))) : []
-		const iPrec = existsIprec ? dataJson.data.map((item) => parseFloat(item.prec.toFixed(1))) : []
+		const iTemp = existsItemp ? dataCharts.data.map((item) => parseFloat(item.temp.toFixed(1))) : []
+		const iPress = existsIpress ? dataCharts.data.map((item) => parseFloat(item.press.toFixed(1))) : []
+		const iPrec = existsIprec ? dataCharts.data.map((item) => parseFloat(item.prec.toFixed(1))) : []
 		const optionsTempPressPrec = {
 			chart: {
 				zoomType: "xy",
@@ -294,14 +294,14 @@ export default function Chart({ date, dataJson, dataCsv, product }) {
 
 	// Temperatura mínima, máxima e média
 	if (product === "tempMinMaxMedia") {
-		const existsTemp_mn = dataJson.data.some((item) => item.hasOwnProperty("temp_mn"))
-		const existsTemp_mx = dataJson.data.some((item) => item.hasOwnProperty("temp_mx"))
+		const existsTemp_mn = dataCharts.data.some((item) => item.hasOwnProperty("temp_mn"))
+		const existsTemp_mx = dataCharts.data.some((item) => item.hasOwnProperty("temp_mx"))
 		const existsTempMinMax = existsTemp_mn && existsTemp_mx
 		if (!existsTempMinMax) {
 			return null
 		}
-		const tempMinMax = existsTempMinMax ? dataJson.data.map((item) => [parseFloat(item.temp_mn.toFixed(2)), parseFloat(item.temp_mx.toFixed(2))]) : []
-		const tempAverage = existsTempMinMax ? dataJson.data.map((item) => parseFloat(((parseFloat(item.temp_mn) + parseFloat(item.temp_mx)) / 2).toFixed(2))) : []
+		const tempMinMax = existsTempMinMax ? dataCharts.data.map((item) => [parseFloat(item.temp_mn.toFixed(2)), parseFloat(item.temp_mx.toFixed(2))]) : []
+		const tempAverage = existsTempMinMax ? dataCharts.data.map((item) => parseFloat(((parseFloat(item.temp_mn) + parseFloat(item.temp_mx)) / 2).toFixed(2))) : []
 		const optionsTempMinMaxMedia = {
 			chart: {
 				type: "arearange",
@@ -383,11 +383,11 @@ export default function Chart({ date, dataJson, dataCsv, product }) {
 
 	// Pressão
 	if (product === "press") {
-		const existsPress = dataJson.data.some((item) => item.hasOwnProperty("prec"))
+		const existsPress = dataCharts.data.some((item) => item.hasOwnProperty("prec"))
 		if (!existsPress) {
 			return null
 		}
-		const press = existsPress ? dataJson.data.map((item) => parseFloat(item.press.toFixed(2))) : []
+		const press = existsPress ? dataCharts.data.map((item) => parseFloat(item.press.toFixed(2))) : []
 		const optionsPress = {
 			chart: {
 				zoomType: "x",
@@ -433,11 +433,11 @@ export default function Chart({ date, dataJson, dataCsv, product }) {
 
 	// Precipitação
 	if (product === "prec") {
-		const existsPrec = dataJson.data.some((item) => item.hasOwnProperty("prec"))
+		const existsPrec = dataCharts.data.some((item) => item.hasOwnProperty("prec"))
 		if (!existsPrec) {
 			return null
 		}
-		const prec = existsPrec ? dataJson.data.map((item) => parseFloat(item.prec.toFixed(2))) : []
+		const prec = existsPrec ? dataCharts.data.map((item) => parseFloat(item.prec.toFixed(2))) : []
 		const optionsPrec = {
 			chart: {
 				type: "area",
@@ -505,11 +505,11 @@ export default function Chart({ date, dataJson, dataCsv, product }) {
 
 	// Vento
 	if (product === "wind") {
-		const existsWind = dataJson.data.some((item) => item.hasOwnProperty("wind"))
+		const existsWind = dataCharts.data.some((item) => item.hasOwnProperty("wind"))
 		if (!existsWind) {
 			return null
 		}
-		const wind = existsWind ? dataJson.data.map((item) => [parseFloat(item.wind_speed.toFixed(2)), parseFloat(item.wind_dir.toFixed(2))]) : []
+		const wind = existsWind ? dataCharts.data.map((item) => [parseFloat(item.wind_speed.toFixed(2)), parseFloat(item.wind_dir.toFixed(2))]) : []
 		const optionsWind = {
 			chart: {
 				zoomType: "x",
@@ -585,11 +585,11 @@ export default function Chart({ date, dataJson, dataCsv, product }) {
 
 	// Umidade relativa
 	if (product === "ur") {
-		const existsUr = dataJson.data.some((item) => item.hasOwnProperty("ur"))
+		const existsUr = dataCharts.data.some((item) => item.hasOwnProperty("ur"))
 		if (!existsUr) {
 			return null
 		}
-		const ur = existsUr ? dataJson.data.map((item) => parseFloat(item.ur.toFixed(2))) : []
+		const ur = existsUr ? dataCharts.data.map((item) => parseFloat(item.ur.toFixed(2))) : []
 		const optionsUr = {
 			chart: {
 				zoomType: "x",
@@ -635,16 +635,16 @@ export default function Chart({ date, dataJson, dataCsv, product }) {
 
 	// Nuvens
 	if (product === "cloud") {
-		const existsLowCloud = dataJson.data.some((item) => item.hasOwnProperty("low_cloud"))
-		const existsMidCloud = dataJson.data.some((item) => item.hasOwnProperty("mid_cloud"))
-		const existsHighCloud = dataJson.data.some((item) => item.hasOwnProperty("high_cloud"))
+		const existsLowCloud = dataCharts.data.some((item) => item.hasOwnProperty("low_cloud"))
+		const existsMidCloud = dataCharts.data.some((item) => item.hasOwnProperty("mid_cloud"))
+		const existsHighCloud = dataCharts.data.some((item) => item.hasOwnProperty("high_cloud"))
 		const existsCloud = existsLowCloud && existsMidCloud && existsHighCloud
 		if (!existsCloud) {
 			return null
 		}
-		const lowCloud = existsLowCloud ? dataJson.data.map((item) => parseFloat(item.low_cloud.toFixed(2))) : []
-		const midCloud = existsMidCloud ? dataJson.data.map((item) => parseFloat(item.mid_cloud.toFixed(2))) : []
-		const highCloud = existsHighCloud ? dataJson.data.map((item) => parseFloat(item.high_cloud.toFixed(2))) : []
+		const lowCloud = existsLowCloud ? dataCharts.data.map((item) => parseFloat(item.low_cloud.toFixed(2))) : []
+		const midCloud = existsMidCloud ? dataCharts.data.map((item) => parseFloat(item.mid_cloud.toFixed(2))) : []
+		const highCloud = existsHighCloud ? dataCharts.data.map((item) => parseFloat(item.high_cloud.toFixed(2))) : []
 		const optionsCloud = {
 			chart: {
 				type: "area",
@@ -709,20 +709,20 @@ export default function Chart({ date, dataJson, dataCsv, product }) {
 
 	// Monóxido de carbono
 	if (product === "co") {
-		const existsCo_40 = dataJson.data.some((item) => item.hasOwnProperty("co_40"))
-		const existsCo_700 = dataJson.data.some((item) => item.hasOwnProperty("co_700"))
-		const existsCo_1400 = dataJson.data.some((item) => item.hasOwnProperty("co_1400"))
-		const existsCo_5400 = dataJson.data.some((item) => item.hasOwnProperty("co_5400"))
-		const existsCo_10200 = dataJson.data.some((item) => item.hasOwnProperty("co_10200"))
+		const existsCo_40 = dataCharts.data.some((item) => item.hasOwnProperty("co_40"))
+		const existsCo_700 = dataCharts.data.some((item) => item.hasOwnProperty("co_700"))
+		const existsCo_1400 = dataCharts.data.some((item) => item.hasOwnProperty("co_1400"))
+		const existsCo_5400 = dataCharts.data.some((item) => item.hasOwnProperty("co_5400"))
+		const existsCo_10200 = dataCharts.data.some((item) => item.hasOwnProperty("co_10200"))
 		const existsCo = existsCo_40 && existsCo_700 && existsCo_1400 && existsCo_5400 && existsCo_10200
 		if (!existsCo) {
 			return null
 		}
-		const co_40 = existsCo_40 ? dataJson.data.map((item) => parseFloat(item.co_40.toFixed(2))) : []
-		const co_700 = existsCo_700 ? dataJson.data.map((item) => parseFloat(item.co_700.toFixed(2))) : []
-		const co_1400 = existsCo_1400 ? dataJson.data.map((item) => parseFloat(item.co_1400.toFixed(2))) : []
-		const co_5400 = existsCo_5400 ? dataJson.data.map((item) => parseFloat(item.co_5400.toFixed(2))) : []
-		const co_10200 = existsCo_10200 ? dataJson.data.map((item) => parseFloat(item.co_10200.toFixed(2))) : []
+		const co_40 = existsCo_40 ? dataCharts.data.map((item) => parseFloat(item.co_40.toFixed(2))) : []
+		const co_700 = existsCo_700 ? dataCharts.data.map((item) => parseFloat(item.co_700.toFixed(2))) : []
+		const co_1400 = existsCo_1400 ? dataCharts.data.map((item) => parseFloat(item.co_1400.toFixed(2))) : []
+		const co_5400 = existsCo_5400 ? dataCharts.data.map((item) => parseFloat(item.co_5400.toFixed(2))) : []
+		const co_10200 = existsCo_10200 ? dataCharts.data.map((item) => parseFloat(item.co_10200.toFixed(2))) : []
 		const optionsCo = {
 			chart: {
 				type: "line",
@@ -800,20 +800,20 @@ export default function Chart({ date, dataJson, dataCsv, product }) {
 
 	// Material micro-particulado
 	if (product === "pm25") {
-		const existsPm25_40 = dataJson.data.some((item) => item.hasOwnProperty("pm25_40"))
-		const existsPm25_700 = dataJson.data.some((item) => item.hasOwnProperty("pm25_700"))
-		const existsPm25_1400 = dataJson.data.some((item) => item.hasOwnProperty("pm25_1400"))
-		const existsPm25_5400 = dataJson.data.some((item) => item.hasOwnProperty("pm25_5400"))
-		const existsPm25_10200 = dataJson.data.some((item) => item.hasOwnProperty("pm25_10200"))
+		const existsPm25_40 = dataCharts.data.some((item) => item.hasOwnProperty("pm25_40"))
+		const existsPm25_700 = dataCharts.data.some((item) => item.hasOwnProperty("pm25_700"))
+		const existsPm25_1400 = dataCharts.data.some((item) => item.hasOwnProperty("pm25_1400"))
+		const existsPm25_5400 = dataCharts.data.some((item) => item.hasOwnProperty("pm25_5400"))
+		const existsPm25_10200 = dataCharts.data.some((item) => item.hasOwnProperty("pm25_10200"))
 		const existsPm25 = existsPm25_40 && existsPm25_700 && existsPm25_1400 && existsPm25_5400 && existsPm25_10200
 		if (!existsPm25) {
 			return null
 		}
-		const pm25_40 = existsPm25 ? dataJson.data.map((item) => parseFloat(item.pm25_40.toFixed(2))) : []
-		const pm25_700 = existsPm25_700 ? dataJson.data.map((item) => parseFloat(item.pm25_700.toFixed(2))) : []
-		const pm25_1400 = existsPm25_1400 ? dataJson.data.map((item) => parseFloat(item.pm25_1400.toFixed(2))) : []
-		const pm25_5400 = existsPm25_5400 ? dataJson.data.map((item) => parseFloat(item.pm25_5400.toFixed(2))) : []
-		const pm25_10200 = existsPm25_10200 ? dataJson.data.map((item) => parseFloat(item.pm25_10200.toFixed(2))) : []
+		const pm25_40 = existsPm25 ? dataCharts.data.map((item) => parseFloat(item.pm25_40.toFixed(2))) : []
+		const pm25_700 = existsPm25_700 ? dataCharts.data.map((item) => parseFloat(item.pm25_700.toFixed(2))) : []
+		const pm25_1400 = existsPm25_1400 ? dataCharts.data.map((item) => parseFloat(item.pm25_1400.toFixed(2))) : []
+		const pm25_5400 = existsPm25_5400 ? dataCharts.data.map((item) => parseFloat(item.pm25_5400.toFixed(2))) : []
+		const pm25_10200 = existsPm25_10200 ? dataCharts.data.map((item) => parseFloat(item.pm25_10200.toFixed(2))) : []
 		const optionsPm25 = {
 			chart: {
 				type: "line",
@@ -929,19 +929,19 @@ export default function Chart({ date, dataJson, dataCsv, product }) {
 			},
 			yAxis: {
 				title: {
-					text: "Elevação (km)", // O eixo y representa a elevação
+					text: "Elevação (m)", // O eixo y representa a elevação
 				},
 				labels: {
-					format: "{value} km", // Formato para a elevação
+					format: "{value} m", // Formato para a elevação
 				},
 				minPadding: 0,
 				maxPadding: 0,
 				startOnTick: false,
 				endOnTick: false,
-				tickPositions: [0, 4, 8, 12, 16, 20, 24, 28, 32],
+				tickPositions: [309, 781, 1423, 2297, 3485, 5102, 7301, 10290],
 				tickWidth: 1,
-				min: 0,
-				max: 32, // Configuração para 32 níveis de elevação, conforme discutido anteriormente
+				min: 1,
+				max: 10290, // Configuração para 32 níveis de elevação, conforme discutido anteriormente
 				reversed: false,
 			},
 			colorAxis: {
@@ -967,7 +967,7 @@ export default function Chart({ date, dataJson, dataCsv, product }) {
 					colsize: 3 * 36e5, // Intervalo de 3 horas (ajuste conforme necessidade)
 					tooltip: {
 						headerFormat: "Concentração de CO<br/>",
-						pointFormat: "{point.x:%d/%m %H:%M}, elevação: {point.y} km: <b>{point.value} ppm</b>",
+						pointFormat: "{point.x:%d/%m %H:%M}, elevação: {point.y} m: <b>{point.value} ppm</b>",
 					},
 				},
 			],
@@ -1010,19 +1010,19 @@ export default function Chart({ date, dataJson, dataCsv, product }) {
 			},
 			yAxis: {
 				title: {
-					text: "Elevação (km)", // O eixo y representa a elevação
+					text: "Elevação (m)", // O eixo y representa a elevação
 				},
 				labels: {
-					format: "{value} km", // Formato para a elevação
+					format: "{value} m", // Formato para a elevação
 				},
 				minPadding: 0,
 				maxPadding: 0,
 				startOnTick: false,
 				endOnTick: false,
-				tickPositions: [0, 4, 8, 12, 16, 20, 24, 28, 32],
+				tickPositions: [309, 781, 1423, 2297, 3485, 5102, 7301, 10290],
 				tickWidth: 1,
-				min: 0,
-				max: 32, // Configuração para 32 níveis de elevação, conforme discutido anteriormente
+				min: 1,
+				max: 10290, // Configuração para 32 níveis de elevação, conforme discutido anteriormente
 				reversed: false,
 			},
 			colorAxis: {
@@ -1048,7 +1048,7 @@ export default function Chart({ date, dataJson, dataCsv, product }) {
 					colsize: 3 * 36e5, // Intervalo de 3 horas (ajuste conforme necessidade)
 					tooltip: {
 						headerFormat: "Concentração de PM25<br/>",
-						pointFormat: "{point.x:%d/%m %H:%M}, elevação: {point.y} km: <b>{point.value} ug/m³</b>",
+						pointFormat: "{point.x:%d/%m %H:%M}, elevação: {point.y} m: <b>{point.value} ug/m³</b>",
 					},
 				},
 			],
@@ -1091,19 +1091,19 @@ export default function Chart({ date, dataJson, dataCsv, product }) {
 			},
 			yAxis: {
 				title: {
-					text: "Elevação (km)", // O eixo y representa a elevação
+					text: "Elevação (m)", // O eixo y representa a elevação
 				},
 				labels: {
-					format: "{value} km", // Formato para a elevação
+					format: "{value} m", // Formato para a elevação
 				},
 				minPadding: 0,
 				maxPadding: 0,
 				startOnTick: false,
 				endOnTick: false,
-				tickPositions: [0, 4, 8, 12, 16, 20, 24, 28, 32],
+				tickPositions: [309, 781, 1423, 2297, 3485, 5102, 7301, 10290],
 				tickWidth: 1,
 				min: 0,
-				max: 32, // Configuração para 32 níveis de elevação, conforme discutido anteriormente
+				max: 10290, // Configuração para 32 níveis de elevação, conforme discutido anteriormente
 				reversed: false,
 			},
 			colorAxis: {
@@ -1129,7 +1129,7 @@ export default function Chart({ date, dataJson, dataCsv, product }) {
 					colsize: 3 * 36e5, // Intervalo de 3 horas (ajuste conforme necessidade)
 					tooltip: {
 						headerFormat: "Concentração de PM25<br/>",
-						pointFormat: "{point.x:%d/%m %H:%M}, elevação: {point.y} km: <b>{point.value} ppb</b>",
+						pointFormat: "{point.x:%d/%m %H:%M}, elevação: {point.y} m: <b>{point.value} ppb</b>",
 					},
 				},
 			],
@@ -1139,7 +1139,7 @@ export default function Chart({ date, dataJson, dataCsv, product }) {
 
 	return (
 		<div>
-			<h3 className='text-2xl'>{dataJson.area}</h3>
+			{dataCharts !== null && <p className='pt-4 text-center'>{dataCharts.area}</p>}
 			<HighchartsReact highcharts={Highcharts} options={options} />
 		</div>
 	)
