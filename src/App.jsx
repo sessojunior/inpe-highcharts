@@ -5,7 +5,7 @@ export default function App() {
 	const date = {
 		year: "2024",
 		month: "10",
-		day: "22",
+		day: "24",
 		turn: "00",
 	}
 	const cityId = 3
