@@ -17,6 +17,11 @@ export default function Chart({ date, dataCharts = null, dataCsv = null, product
 	const dateTime = `${date.year}-${date.month}-${date.day} ${date.turn}:00:00`
 	const pointStart = Date.UTC(parseInt(dateTime.substr(0, 4)), parseInt(dateTime.substr(5, 2)) - 1, parseInt(dateTime.substr(8, 2)), parseInt(dateTime.substr(11, 2)), parseInt(dateTime.substr(14, 2)), parseInt(dateTime.substr(17, 2)))
 
+	// console.log("date", date);
+	// console.log("dataCharts", dataCharts);
+	// console.log("dataCsv", dataCsv);
+	// console.log("product", product);
+
 	// Função para converter CSV em dados para o heatmap
 	const parseCsvToHeatmapData = (csvString, valueType) => {
 		const rows = csvString.trim().split("\n")
@@ -34,6 +39,8 @@ export default function Chart({ date, dataCharts = null, dataCsv = null, product
 			const co = parseFloat(row[2]) // Coluna 'co'
 			const pm25 = parseFloat(row[3]) // Coluna 'pm25'
 			const nox = parseFloat(row[4]) // Coluna 'nox'
+			const wdir = parseFloat(row[5]) // Coluna 'wdir'
+			const speed = parseFloat(row[6]) // Coluna 'speed'
 
 			// Verificar min e max da data
 			if (date < minDate) minDate = date
@@ -47,6 +54,10 @@ export default function Chart({ date, dataCharts = null, dataCsv = null, product
 				valueToPlot = pm25
 			} else if (valueType === "nox") {
 				valueToPlot = nox
+			} else if (valueType === "wdir") {
+				valueToPlot = wdir
+			} else if (valueType === "speed") {
+				valueToPlot = speed
 			} else {
 				valueToPlot = co // Valor padrão
 			}
@@ -120,6 +131,7 @@ export default function Chart({ date, dataCharts = null, dataCsv = null, product
 		const optionsTempPressPrec = {
 			chart: {
 				zoomType: "xy",
+				backgroundColor: "transparent",
 			},
 			title: {
 				text: `Temperatura, pressão e precipitação`,
@@ -310,6 +322,7 @@ export default function Chart({ date, dataCharts = null, dataCsv = null, product
 					minWidth: 600,
 					scrollPositionX: 1,
 				},
+				backgroundColor: "transparent",
 			},
 			title: {
 				text: "Temperatura mínima, maxima e média",
@@ -391,6 +404,7 @@ export default function Chart({ date, dataCharts = null, dataCsv = null, product
 		const optionsPress = {
 			chart: {
 				zoomType: "x",
+				backgroundColor: "transparent",
 			},
 			title: {
 				text: "Pressão reduzida ao nível do mar (hPa)",
@@ -442,8 +456,8 @@ export default function Chart({ date, dataCharts = null, dataCsv = null, product
 			chart: {
 				type: "area",
 				zoomType: "x",
+				backgroundColor: "transparent",
 			},
-
 			title: {
 				text: "Precipitação (mm/h)",
 				align: "center",
@@ -513,6 +527,7 @@ export default function Chart({ date, dataCharts = null, dataCsv = null, product
 		const optionsWind = {
 			chart: {
 				zoomType: "x",
+				backgroundColor: "transparent",
 			},
 			title: {
 				text: "Vento em 1000 hPa (m/s)",
@@ -593,6 +608,7 @@ export default function Chart({ date, dataCharts = null, dataCsv = null, product
 		const optionsUr = {
 			chart: {
 				zoomType: "x",
+				backgroundColor: "transparent",
 			},
 			title: {
 				text: "Umidade Relativa a 2m do solo (%)",
@@ -649,6 +665,7 @@ export default function Chart({ date, dataCharts = null, dataCsv = null, product
 			chart: {
 				type: "area",
 				zoomType: "x",
+				backgroundColor: "transparent",
 			},
 			title: {
 				text: "Cobertura de nuvens (%)",
@@ -727,6 +744,7 @@ export default function Chart({ date, dataCharts = null, dataCsv = null, product
 			chart: {
 				type: "line",
 				zoomType: "x",
+				backgroundColor: "transparent",
 			},
 			title: {
 				text: "Monóxido de Carbono (ppb)",
@@ -818,6 +836,7 @@ export default function Chart({ date, dataCharts = null, dataCsv = null, product
 			chart: {
 				type: "line",
 				zoomType: "x",
+				backgroundColor: "transparent",
 			},
 			title: {
 				text: "Material Micro-particulado 2.5nm (ug/m³)",
@@ -895,11 +914,46 @@ export default function Chart({ date, dataCharts = null, dataCsv = null, product
 	// console.log("parseCsvToHeatmapData(dataCsv, 'nox')", parseCsvToHeatmapData(dataCsv, "nox"))
 
 	// Heatmap de monóxido de carbono
-	if (product === "heatmapCo") {
+	if (product === "csvCo") {
 		const { data, minDate, maxDate } = parseCsvToHeatmapData(dataCsv, "co")
+		const customLabels = {
+			1: "39.2 m",
+			2: "122.4 m",
+			3: "212.2 m",
+			4: "309.1 m",
+			5: "413.9 m",
+			6: "527.0 m",
+			7: "649.1 m",
+			8: "781.1 m",
+			9: "923.5 m",
+			10: "1077.4 m",
+			11: "1243.6 m",
+			12: "1423.1 m",
+			13: "1617.0 m",
+			14: "1826.3 m",
+			15: "2052.4 m",
+			16: "2296.6 m",
+			17: "2560.3 m",
+			18: "2845.2 m",
+			19: "3152.8 m",
+			20: "3485.0 m",
+			21: "3843.8 m",
+			22: "4231.3 m",
+			23: "4649.8 m",
+			24: "5101.8 m",
+			25: "5590.0 m",
+			26: "6117.1 m",
+			27: "6686.5 m",
+			28: "7301.4 m",
+			29: "7965.6 m",
+			30: "8682.8 m",
+			31: "9458.6 m",
+			32: "10289.8 m",
+		}
 		const optionsHeatmapCo = {
 			chart: {
 				type: "heatmap",
+				backgroundColor: "transparent",
 			},
 			boost: {
 				useGPUTranslations: true,
@@ -929,19 +983,21 @@ export default function Chart({ date, dataCharts = null, dataCsv = null, product
 			},
 			yAxis: {
 				title: {
-					text: "Elevação (m)", // O eixo y representa a elevação
+					text: "Elevação em 32 níveis (m)", // O eixo y representa a elevação
 				},
 				labels: {
-					format: "{value} m", // Formato para a elevação
+					formatter: function () {
+						return customLabels[this.value] || this.value // Retorna o label personalizado
+					},
 				},
 				minPadding: 0,
 				maxPadding: 0,
 				startOnTick: false,
 				endOnTick: false,
-				tickPositions: [309, 781, 1423, 2297, 3485, 5102, 7301, 10290],
+				tickPositions: [4, 8, 12, 16, 20, 24, 28, 32], // Posições do eixo y em níveis
 				tickWidth: 1,
 				min: 1,
-				max: 10290, // Configuração para 32 níveis de elevação, conforme discutido anteriormente
+				max: 32, // Configuração para 32 níveis de elevação
 				reversed: false,
 			},
 			colorAxis: {
@@ -976,11 +1032,46 @@ export default function Chart({ date, dataCharts = null, dataCsv = null, product
 	}
 
 	// Heatmap de material micro-particulado
-	if (product === "heatmapPm25") {
+	if (product === "csvPm25") {
 		const { data, minDate, maxDate } = parseCsvToHeatmapData(dataCsv, "pm25")
+		const customLabels = {
+			1: "39.2 m",
+			2: "122.4 m",
+			3: "212.2 m",
+			4: "309.1 m",
+			5: "413.9 m",
+			6: "527.0 m",
+			7: "649.1 m",
+			8: "781.1 m",
+			9: "923.5 m",
+			10: "1077.4 m",
+			11: "1243.6 m",
+			12: "1423.1 m",
+			13: "1617.0 m",
+			14: "1826.3 m",
+			15: "2052.4 m",
+			16: "2296.6 m",
+			17: "2560.3 m",
+			18: "2845.2 m",
+			19: "3152.8 m",
+			20: "3485.0 m",
+			21: "3843.8 m",
+			22: "4231.3 m",
+			23: "4649.8 m",
+			24: "5101.8 m",
+			25: "5590.0 m",
+			26: "6117.1 m",
+			27: "6686.5 m",
+			28: "7301.4 m",
+			29: "7965.6 m",
+			30: "8682.8 m",
+			31: "9458.6 m",
+			32: "10289.8 m",
+		}
 		const optionsHeatmapPm25 = {
 			chart: {
 				type: "heatmap",
+				backgroundColor: "transparent",
 			},
 			boost: {
 				useGPUTranslations: true,
@@ -1010,19 +1101,21 @@ export default function Chart({ date, dataCharts = null, dataCsv = null, product
 			},
 			yAxis: {
 				title: {
-					text: "Elevação (m)", // O eixo y representa a elevação
+					text: "Elevação em 32 níveis (m)", // O eixo y representa a elevação
 				},
 				labels: {
-					format: "{value} m", // Formato para a elevação
+					formatter: function () {
+						return customLabels[this.value] || this.value // Retorna o label personalizado
+					},
 				},
 				minPadding: 0,
 				maxPadding: 0,
 				startOnTick: false,
 				endOnTick: false,
-				tickPositions: [309, 781, 1423, 2297, 3485, 5102, 7301, 10290],
+				tickPositions: [4, 8, 12, 16, 20, 24, 28, 32], // Posições do eixo y em níveis
 				tickWidth: 1,
 				min: 1,
-				max: 10290, // Configuração para 32 níveis de elevação, conforme discutido anteriormente
+				max: 32, // Configuração para 32 níveis de elevação
 				reversed: false,
 			},
 			colorAxis: {
@@ -1057,11 +1150,46 @@ export default function Chart({ date, dataCharts = null, dataCsv = null, product
 	}
 
 	// Heatmap de óxido de nitrogenio
-	if (product === "heatmapNox") {
+	if (product === "csvNox") {
 		const { data, minDate, maxDate } = parseCsvToHeatmapData(dataCsv, "nox")
+		const customLabels = {
+			1: "39.2 m",
+			2: "122.4 m",
+			3: "212.2 m",
+			4: "309.1 m",
+			5: "413.9 m",
+			6: "527.0 m",
+			7: "649.1 m",
+			8: "781.1 m",
+			9: "923.5 m",
+			10: "1077.4 m",
+			11: "1243.6 m",
+			12: "1423.1 m",
+			13: "1617.0 m",
+			14: "1826.3 m",
+			15: "2052.4 m",
+			16: "2296.6 m",
+			17: "2560.3 m",
+			18: "2845.2 m",
+			19: "3152.8 m",
+			20: "3485.0 m",
+			21: "3843.8 m",
+			22: "4231.3 m",
+			23: "4649.8 m",
+			24: "5101.8 m",
+			25: "5590.0 m",
+			26: "6117.1 m",
+			27: "6686.5 m",
+			28: "7301.4 m",
+			29: "7965.6 m",
+			30: "8682.8 m",
+			31: "9458.6 m",
+			32: "10289.8 m",
+		}
 		const optionsHeatmapNox = {
 			chart: {
 				type: "heatmap",
+				backgroundColor: "transparent",
 			},
 			boost: {
 				useGPUTranslations: true,
@@ -1091,19 +1219,21 @@ export default function Chart({ date, dataCharts = null, dataCsv = null, product
 			},
 			yAxis: {
 				title: {
-					text: "Elevação (m)", // O eixo y representa a elevação
+					text: "Elevação em 32 níveis (m)", // O eixo y representa a elevação
 				},
 				labels: {
-					format: "{value} m", // Formato para a elevação
+					formatter: function () {
+						return customLabels[this.value] || this.value // Retorna o label personalizado
+					},
 				},
 				minPadding: 0,
 				maxPadding: 0,
 				startOnTick: false,
 				endOnTick: false,
-				tickPositions: [309, 781, 1423, 2297, 3485, 5102, 7301, 10290],
+				tickPositions: [4, 8, 12, 16, 20, 24, 28, 32], // Posições do eixo y em níveis
 				tickWidth: 1,
-				min: 0,
-				max: 10290, // Configuração para 32 níveis de elevação, conforme discutido anteriormente
+				min: 1,
+				max: 32, // Configuração para 32 níveis de elevação
 				reversed: false,
 			},
 			colorAxis: {
@@ -1129,12 +1259,23 @@ export default function Chart({ date, dataCharts = null, dataCsv = null, product
 					colsize: 3 * 36e5, // Intervalo de 3 horas (ajuste conforme necessidade)
 					tooltip: {
 						headerFormat: "Concentração de PM25<br/>",
-						pointFormat: "{point.x:%d/%m %H:%M}, elevação: {point.y} m: <b>{point.value} ppb</b>",
+						pointFormatter: function () {
+							const level = this.y // Obtem o nível da elevação
+							return `${Highcharts.dateFormat("%d/%m %H:%M", this.x)}, elevação: nível ${level}: ${customLabels[level]}: <b>${this.value} ppb</b>`
+						},
 					},
 				},
 			],
 		}
 		options = optionsHeatmapNox
+	}
+
+	// Vector plot de direção do vento
+	if (product === "csvWind") {
+	}
+
+	// Vector plot de velocidade
+	if (product === "csvSpeed") {
 	}
 
 	return (
