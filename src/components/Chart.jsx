@@ -1,4 +1,4 @@
-import Highcharts from "highcharts"
+import Highcharts, { color } from "highcharts"
 import HighchartsReact from "highcharts-react-official"
 import highchartsMore from "highcharts/highcharts-more"
 import highchartsWindbarb from "highcharts/modules/windbarb"
@@ -573,7 +573,7 @@ export default function Chart({ date, dataCharts = null, dataCsv = null, product
 					type: "windbarb",
 					data: wind,
 					name: "Vento",
-					color: Highcharts.getOptions().colors[1],
+					color: "Highcharts.getOptions().colors[1]",
 					showInLegend: false,
 					tooltip: {
 						valueSuffix: " m/s",
@@ -1383,7 +1383,7 @@ export default function Chart({ date, dataCharts = null, dataCsv = null, product
 					data: data,
 					type: "vector",
 					name: "Direção e velocidade do vento",
-					color: Highcharts.getOptions().colors[1],
+					color: "#000000",
 					tooltip: {
 						headerFormat: "Direção e velocidade do vento<br/>", // Cabeçalho do tooltip
 						pointFormatter: function () {
@@ -1404,6 +1404,13 @@ export default function Chart({ date, dataCharts = null, dataCsv = null, product
 	if (product === "csvWindCo") {
 		const { data: dataCo, minDate, maxDate } = parseCsvToHeatmapData(dataCsv, "co")
 		const { data: dataWind } = parseCsvToHeatmapData(dataCsv, "wind")
+		const dataWindColor = dataWind.map((point) => ({
+			x: point[0], // Assumindo que a primeira posição é x
+			y: point[1], // Assumindo que a segunda posição é y
+			length: point[2], // Assumindo que a terceira posição é a velocidade
+			direction: point[3], // Assumindo que a quarta posição é a direção
+			color: "#000000", // Cor preta para as setas
+		}))
 		const customLabels = {
 			1: "39.2 m",
 			2: "122.4 m",
@@ -1563,7 +1570,7 @@ export default function Chart({ date, dataCharts = null, dataCsv = null, product
 					enableMouseTracking: true,
 				},
 				{
-					data: dataWind,
+					data: dataWindColor,
 					type: "vector",
 					name: "Direção e velocidade do vento",
 					color: Highcharts.getOptions().colors[1],
@@ -1591,6 +1598,13 @@ export default function Chart({ date, dataCharts = null, dataCsv = null, product
 	if (product === "csvWindPm25") {
 		const { data: dataPm25, minDate, maxDate } = parseCsvToHeatmapData(dataCsv, "pm25")
 		const { data: dataWind } = parseCsvToHeatmapData(dataCsv, "wind")
+		const dataWindColor = dataWind.map((point) => ({
+			x: point[0], // Assumindo que a primeira posição é x
+			y: point[1], // Assumindo que a segunda posição é y
+			length: point[2], // Assumindo que a terceira posição é a velocidade
+			direction: point[3], // Assumindo que a quarta posição é a direção
+			color: "#000000", // Cor preta para as setas
+		}))
 		const customLabels = {
 			1: "39.2 m",
 			2: "122.4 m",
@@ -1750,7 +1764,7 @@ export default function Chart({ date, dataCharts = null, dataCsv = null, product
 					enableMouseTracking: true,
 				},
 				{
-					data: dataWind,
+					data: dataWindColor,
 					type: "vector",
 					name: "Direção e velocidade do vento",
 					color: Highcharts.getOptions().colors[1],
@@ -1778,6 +1792,13 @@ export default function Chart({ date, dataCharts = null, dataCsv = null, product
 	if (product === "csvWindNox") {
 		const { data: dataNox, minDate, maxDate } = parseCsvToHeatmapData(dataCsv, "nox")
 		const { data: dataWind } = parseCsvToHeatmapData(dataCsv, "wind")
+		const dataWindColor = dataWind.map((point) => ({
+			x: point[0], // Assumindo que a primeira posição é x
+			y: point[1], // Assumindo que a segunda posição é y
+			length: point[2], // Assumindo que a terceira posição é a velocidade
+			direction: point[3], // Assumindo que a quarta posição é a direção
+			color: "#000000", // Cor preta para as setas
+		}))
 		const customLabels = {
 			1: "39.2 m",
 			2: "122.4 m",
@@ -1937,10 +1958,9 @@ export default function Chart({ date, dataCharts = null, dataCsv = null, product
 					enableMouseTracking: true,
 				},
 				{
-					data: dataWind,
+					data: dataWindColor,
 					type: "vector",
 					name: "Direção e velocidade do vento",
-					color: Highcharts.getOptions().colors[1],
 					tooltip: {
 						enabled: false, // Desabilita o tooltip para a série de vetor
 					},
@@ -1952,7 +1972,7 @@ export default function Chart({ date, dataCharts = null, dataCsv = null, product
 						hover: {
 							enabled: true,
 							brightness: 0.25, // Ajuste de brilho para hover
-							color: "#000000", // Cor para o hover
+							color: "#ff0000", // Cor para o hover
 						},
 					},
 				},

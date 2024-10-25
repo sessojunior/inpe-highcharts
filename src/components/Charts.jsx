@@ -8,7 +8,7 @@ export default function Charts({ date, urlCharts, urlCsv }) {
 	const [loading, setLoading] = useState(true)
 	const [error, setError] = useState(null)
 
-	console.log("dataCsv", dataCsv)
+	// console.log("dataCsv", dataCsv)
 
 	useEffect(() => {
 		async function fetchCharts() {
@@ -79,7 +79,7 @@ export default function Charts({ date, urlCharts, urlCsv }) {
 		<div>
 			{dataCharts !== null && (
 				<>
-					<Chart date={date} dataCharts={dataCharts} product='tempPressPrec' />
+					{/* <Chart date={date} dataCharts={dataCharts} product='tempPressPrec' />
 					<Chart date={date} dataCharts={dataCharts} product='tempMinMaxMedia' />
 					<Chart date={date} dataCharts={dataCharts} product='press' />
 					<Chart date={date} dataCharts={dataCharts} product='prec' />
@@ -87,15 +87,15 @@ export default function Charts({ date, urlCharts, urlCsv }) {
 					<Chart date={date} dataCharts={dataCharts} product='ur' />
 					<Chart date={date} dataCharts={dataCharts} product='cloud' />
 					<Chart date={date} dataCharts={dataCharts} product='co' />
-					<Chart date={date} dataCharts={dataCharts} product='pm25' />
+					<Chart date={date} dataCharts={dataCharts} product='pm25' /> */}
 				</>
 			)}
 			{dataCsv !== null && (
 				<>
-					{/* <Chart date={date} dataCsv={dataCsv} product="csvCo" />
-          <Chart date={date} dataCsv={dataCsv} product="csvPm25" />
-          <Chart date={date} dataCsv={dataCsv} product="csvNox" />
-          <Chart date={date} dataCsv={dataCsv} product="csvWind" /> */}
+					{/* <Chart date={date} dataCsv={dataCsv} product='csvCo' />
+					<Chart date={date} dataCsv={dataCsv} product='csvPm25' />
+					<Chart date={date} dataCsv={dataCsv} product='csvNox' />
+					<Chart date={date} dataCsv={dataCsv} product='csvWind' /> */}
 					<Chart date={date} dataCsv={dataCsv} product='csvWindCo' />
 					<Chart date={date} dataCsv={dataCsv} product='csvWindPm25' />
 					<Chart date={date} dataCsv={dataCsv} product='csvWindNox' />
