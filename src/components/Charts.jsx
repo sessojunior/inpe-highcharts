@@ -8,6 +8,8 @@ export default function Charts({ date, urlCharts, urlCsv }) {
 	const [loading, setLoading] = useState(true)
 	const [error, setError] = useState(null)
 
+	console.log("dataCsv", dataCsv)
+
 	useEffect(() => {
 		async function fetchCharts() {
 			setLoading(true)
